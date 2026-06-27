@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIRE 473 · Chapter 6 — International Parity Conditions</title>
+<style>
+:root{
+  --sky:#63C5DA;
+  --sky-deep:#0F6E8C;
+  --sky-ink:#08323F;
+  --sky-mist:#EAF7FB;
+  --sky-line:#BFE6F0;
+  --amber:#F2A541;
+  --up:#2FA56B;
+  --down:#E2615A;
+  --paper:#ffffff;
+  --mono:"SF Mono","Cascadia Code","Consolas","Roboto Mono",ui-monospace,monospace;
+  --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--sans);color:var(--sky-ink);overflow:hidden;background:#06222B}
+#viewport{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 28%, #0d3c4b, #06222B 75%)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+
+/* ---------- slides ---------- */
+.slide{position:absolute;inset:0;width:1280px;height:720px;background:var(--paper);display:none;flex-direction:column;overflow:hidden}
+.slide.active{display:flex}
+.slide-pad{padding:50px 70px;display:flex;flex-direction:column;height:100%;position:relative}
+
+.kicker{font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--sky-deep);font-weight:800;display:flex;align-items:center;gap:12px}
+.kicker::before{content:"";width:32px;height:3px;background:var(--sky);display:inline-block;border-radius:2px}
+.slide-title{font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--sky-ink);margin-top:12px;line-height:1.05}
+.slide-title.sm{font-size:32px}
+.slide-sub{font-size:18px;color:#4a6b75;margin-top:10px;max-width:1000px;line-height:1.45}
+.body{flex:1;min-height:0;margin-top:24px;display:flex;flex-direction:column}
+
+.footer{position:absolute;bottom:20px;left:70px;right:70px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#9bbcc7;letter-spacing:.4px}
+.footer .tag{font-weight:800;color:var(--sky-deep);letter-spacing:1px}
+
+/* ---------- bullets (custom ::before to avoid grid fragmenting) ---------- */
+ul.clean{list-style:none}
+ul.clean li{position:relative;padding-left:30px;margin:13px 0;font-size:18.5px;line-height:1.45;color:#27454f}
+ul.clean li::before{content:"";position:absolute;left:3px;top:8px;width:11px;height:11px;background:var(--sky);border-radius:2px;transform:rotate(45deg)}
+ul.clean li b{color:var(--sky-deep);font-weight:700}
+ul.tight li{margin:8px 0;font-size:17px}
+
+/* ---------- cards / layout ---------- */
+.card{background:var(--paper);border:1px solid var(--sky-line);border-radius:14px;padding:22px 24px;box-shadow:0 8px 22px rgba(15,110,140,.06)}
+.card.tint{background:var(--sky-mist);box-shadow:none}
+.card.ink{background:var(--sky-ink);color:#dff3f8;border:none}
+.card-title{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sky-deep);font-weight:800;margin-bottom:12px}
+.card.ink .card-title{color:var(--sky)}
+.row{display:flex;gap:22px}
+.col{flex:1;min-width:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.center{align-items:center}
+.fill{flex:1;min-height:0}
+
+.formula{font-family:var(--mono);background:var(--sky-mist);border-left:4px solid var(--sky);border-radius:0 10px 10px 0;padding:16px 20px;font-size:21px;color:var(--sky-ink);margin:6px 0}
+.formula .note{display:block;font-family:var(--sans);font-size:13.5px;color:#5b7d88;margin-top:8px}
+.kterm{color:var(--sky-deep);font-weight:700}
+
+.tagrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.pill{display:inline-block;padding:5px 13px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.4px}
+.pill.good{background:rgba(47,165,107,.16);color:#1f7a4d}
+.pill.bad{background:rgba(226,97,90,.16);color:#b23c35}
+.pill.neutral{background:rgba(15,110,140,.12);color:var(--sky-deep)}
+.pill.amber{background:rgba(242,165,65,.2);color:#b9791e}
+
+/* ---------- title + divider ---------- */
+.title-slide{background:linear-gradient(135deg,#0F6E8C 0%,#3FAFCB 55%,#63C5DA 100%);color:#fff;justify-content:center;padding:0 92px}
+.divider{background:linear-gradient(130deg,#0c5f7a,#3FAFCB);color:#fff;justify-content:center;padding:0 92px}
+.divider .dnum{font-family:var(--mono);font-size:120px;font-weight:700;opacity:.22;line-height:1}
+.divider .dlabel{font-size:15px;letter-spacing:4px;text-transform:uppercase;font-weight:800;opacity:.9}
+.divider .dtitle{font-size:52px;font-weight:800;letter-spacing:-1px;margin-top:8px;line-height:1.05;max-width:920px}
+.divider .dsub{font-size:19px;opacity:.92;margin-top:16px;max-width:760px;line-height:1.45}
+
+/* ---------- tools ---------- */
+.tool{display:flex;gap:24px;flex:1;min-height:0}
+.tool-controls{width:420px;flex-shrink:0;background:var(--sky-mist);border:1px solid var(--sky-line);border-radius:16px;padding:22px;overflow:auto}
+.tool-controls.wide{width:470px}
+.tool-viz{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+.ctl-h{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sky-deep);font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ctl-h::before{content:"▸";color:var(--sky)}
+
+.field{margin-bottom:15px}
+.field>label{display:flex;justify-content:space-between;align-items:baseline;font-size:14.5px;font-weight:600;color:#2c4d57;margin-bottom:6px}
+.field>label .val{font-family:var(--mono);color:var(--sky-deep);font-weight:700;font-size:15px}
+.field .hint{font-size:12px;color:#7494a0;margin-top:4px;font-weight:400}
+input[type=range]{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:#cfe9f1;border-radius:4px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--sky-deep);cursor:pointer;border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--sky-deep);cursor:pointer;border:3px solid #fff}
+input[type=number],input[type=text],select{width:100%;padding:9px 11px;border:1.5px solid var(--sky-line);border-radius:9px;font-family:var(--mono);font-size:15px;color:var(--sky-ink);background:#fff}
+input[type=text]{font-family:var(--sans)}
+input:focus,select:focus{border-color:var(--sky);outline:none;box-shadow:0 0 0 3px rgba(99,197,218,.2)}
+.two-up{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{background:var(--sky-deep);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:background .15s}
+.btn:hover{background:#0b5871}
+.btn.amber{background:var(--amber)}.btn.amber:hover{background:#dd9230}
+.btn.block{width:100%}
+.btn.ghost{background:#fff;color:var(--sky-deep);border:1.5px solid var(--sky-line)}
+.btn.ghost:hover{background:var(--sky-mist)}
+.btnrow{display:flex;gap:10px;margin-top:6px}
+
+/* readouts */
+.answer{background:var(--sky-ink);border-radius:16px;padding:22px 26px;color:#dff3f8;display:flex;flex-direction:column;justify-content:center}
+.answer .alabel{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky);font-weight:700}
+.answer .bignum{font-family:var(--mono);font-size:48px;font-weight:700;line-height:1.05;margin-top:6px;color:#fff}
+.answer .bignum.sm{font-size:36px}
+.answer .asub{font-size:15px;color:#a9d6e2;margin-top:8px;line-height:1.4}
+.up{color:#63e6a6 !important}.down{color:#ff938b !important}.neu{color:#fff}
+
+.statgrid{display:grid;gap:12px}
+.statgrid.c2{grid-template-columns:1fr 1fr}
+.statgrid.c3{grid-template-columns:1fr 1fr 1fr}
+.stat{background:#fff;border:1px solid var(--sky-line);border-radius:12px;padding:14px 16px}
+.stat .s-l{font-size:12.5px;color:#6b8d99;font-weight:600;letter-spacing:.3px}
+.stat .s-v{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--sky-ink);margin-top:4px;line-height:1}
+.stat .s-v.pos{color:var(--up)}.stat .s-v.neg{color:var(--down)}
+.stat.hl{background:var(--sky-mist);border-color:var(--sky)}
+
+.verdict{border-radius:12px;padding:14px 18px;font-size:16px;line-height:1.4;font-weight:600}
+.verdict.good{background:rgba(47,165,107,.12);color:#1f6e46;border:1px solid rgba(47,165,107,.3)}
+.verdict.bad{background:rgba(226,97,90,.1);color:#a83a33;border:1px solid rgba(226,97,90,.3)}
+.verdict.neutral{background:var(--sky-mist);color:var(--sky-deep);border:1px solid var(--sky-line)}
+.verdict b{font-weight:800}
+
+/* simple bar chart */
+.chart{background:#fff;border:1px solid var(--sky-line);border-radius:14px;padding:18px 20px 14px;flex:1;display:flex;flex-direction:column;min-height:0}
+.chart-h{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sky-deep);font-weight:800;margin-bottom:14px}
+.barwrap{display:flex;align-items:flex-end;justify-content:space-around;gap:12px;flex:1;min-height:0;border-bottom:2px solid var(--sky-line);padding-bottom:0}
+.barcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+.barcol .bval{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--sky-ink)}
+.bar{width:74%;background:linear-gradient(180deg,var(--sky),var(--sky-deep));border-radius:7px 7px 0 0;transition:height .35s cubic-bezier(.2,.7,.3,1);min-height:3px}
+.bar.amber{background:linear-gradient(180deg,#f6bd6a,var(--amber))}
+.bar.up{background:linear-gradient(180deg,#5fd79b,var(--up))}
+.bar.down{background:linear-gradient(180deg,#ef8e87,var(--down))}
+.barlabels{display:flex;justify-content:space-around;gap:12px;margin-top:8px}
+.barlabels span{flex:1;text-align:center;font-size:12.5px;color:#5b7d88;font-weight:600}
+
+/* the signature money-flow box */
+.flowbox{position:relative;background:#fff;border:1px solid var(--sky-line);border-radius:14px;padding:20px;flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.flow-grid{display:grid;grid-template-columns:1fr 110px 1fr;grid-template-rows:auto 70px auto;align-items:center;justify-items:center;gap:6px}
+.fnode{background:var(--sky-mist);border:1.5px solid var(--sky-line);border-radius:11px;padding:12px 14px;text-align:center;width:100%}
+.fnode .fn-l{font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--sky-deep);font-weight:700}
+.fnode .fn-v{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--sky-ink);margin-top:3px}
+.fnode.win{background:rgba(47,165,107,.12);border-color:var(--up)}
+.fnode.win .fn-v{color:var(--up)}
+.fmid{font-size:12px;color:#5b7d88;font-weight:700;text-align:center}
+.farrow{color:var(--sky);font-size:22px;font-weight:700}
+
+/* roadmap chain */
+.chain{display:flex;align-items:stretch;gap:0;margin-top:18px}
+.node{flex:1;background:var(--sky-mist);border:1.5px solid var(--sky-line);border-radius:14px;padding:18px 14px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.node .nlabel{font-size:12.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--sky-deep);font-weight:800;line-height:1.3}
+.node .nval{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--sky-ink);margin-top:8px}
+.link{width:118px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 6px}
+.link .lname{font-size:11.5px;color:var(--sky-deep);font-weight:800;text-align:center;letter-spacing:.5px}
+.link .arrow{width:100%;height:2px;background:var(--sky);position:relative}
+.link .arrow::after{content:"";position:absolute;right:-1px;top:-4px;border-left:9px solid var(--sky);border-top:5px solid transparent;border-bottom:5px solid transparent}
+
+/* table */
+table.data{width:100%;border-collapse:collapse;font-size:14px}
+table.data th{background:var(--sky-deep);color:#fff;padding:9px 11px;text-align:left;font-weight:700;font-size:12.5px;letter-spacing:.4px}
+table.data th:first-child{border-radius:8px 0 0 0}table.data th:last-child{border-radius:0 8px 0 0}
+table.data td{padding:8px 11px;border-bottom:1px solid var(--sky-line);font-family:var(--mono);font-size:13.5px}
+table.data td.name{font-family:var(--sans);font-weight:600;color:var(--sky-ink)}
+table.data tr:hover td{background:var(--sky-mist)}
+
+.note-box{background:rgba(242,165,65,.1);border:1px solid rgba(242,165,65,.35);border-radius:12px;padding:14px 18px;font-size:15px;color:#8a5a13;line-height:1.45}
+.note-box b{color:#b9791e}
+.use-hint{display:inline-flex;align-items:center;gap:8px;background:rgba(99,197,218,.16);border:1px solid var(--sky-line);border-radius:999px;padding:7px 16px;font-size:13.5px;color:var(--sky-deep);font-weight:700;margin-top:14px}
+
+/* ---------- nav controls ---------- */
+#controls{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:rgba(8,50,63,.82);backdrop-filter:blur(6px);padding:9px 16px;border-radius:999px;z-index:50;box-shadow:0 6px 22px rgba(0,0,0,.3)}
+#controls button{background:var(--sky);color:#06222B;border:none;width:38px;height:38px;border-radius:50%;font-size:20px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+#controls button:hover{background:#fff}
+#counter{color:#cdeaf2;font-family:var(--mono);font-size:14px;font-weight:700;min-width:74px;text-align:center}
+#progress{position:fixed;top:0;left:0;height:4px;background:var(--sky);z-index:60;transition:width .25s;box-shadow:0 0 8px var(--sky)}
+.hintbadge{position:fixed;bottom:24px;right:22px;background:rgba(8,50,63,.78);color:#cdeaf2;font-size:12px;padding:6px 13px;border-radius:8px;z-index:50;letter-spacing:.3px}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="viewport">
+<div id="stage">
+
+<!-- ============ SLIDE 1 : TITLE ============ -->
+<section class="slide active">
+  <div class="slide-pad title-slide">
+    <div style="font-size:14px;letter-spacing:4px;text-transform:uppercase;font-weight:800;opacity:.92">FIRE 473 · International Finance</div>
+    <h1 style="font-size:66px;font-weight:800;letter-spacing:-2px;line-height:1.02;margin-top:18px">International Parity<br>Conditions</h1>
+    <div style="font-size:22px;opacity:.95;margin-top:18px;font-weight:500">Chapter 6 · <i>Multinational Business Finance</i>, 16th Edition<br><span style="font-size:17px;opacity:.85">Eiteman · Stonehill · Moffett — with the Mrs. Watanabe Yen Carry Trade case</span></div>
+    <div style="display:flex;gap:12px;margin-top:32px">
+      <span class="pill" style="background:rgba(255,255,255,.22);color:#fff">52 slides</span>
+      <span class="pill" style="background:rgba(255,255,255,.22);color:#fff">12 live demo tools</span>
+      <span class="pill" style="background:rgba(255,255,255,.22);color:#fff">No coding required</span>
+    </div>
+    <div style="margin-top:34px;font-size:15px;opacity:.9;display:flex;align-items:center;gap:10px">
+      <span style="background:rgba(255,255,255,.2);border-radius:8px;padding:6px 12px">◀ ▶ arrow keys</span>
+      <span>to move · every <b>blue panel</b> is a working tool — just drag the sliders or type a number.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 : LEARNING OBJECTIVES ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Chapter 6 · Overview</div>
+    <h2 class="slide-title">What this chapter answers</h2>
+    <div class="slide-sub">Are exchange-rate changes predictable? The parity conditions are the core financial theory that links three things together: <b>prices</b>, <b>interest rates</b>, and <b>exchange rates</b>.</div>
+    <div class="body">
+      <div class="grid-2" style="gap:20px">
+        <div class="card tint"><div class="card-title">6.1 · Prices</div><div style="font-size:17px;line-height:1.45;color:#2c4d57">How price levels and <b>inflation</b> across countries determine the rates at which currencies trade — the Law of One Price and Purchasing Power Parity.</div></div>
+        <div class="card tint"><div class="card-title">6.2 · Interest Rates</div><div style="font-size:17px;line-height:1.45;color:#2c4d57">How interest rates reflect inflation and drive exchange rates — the Fisher effect, forward rates, interest rate parity, and arbitrage.</div></div>
+        <div class="card tint"><div class="card-title">6.3 · Forward as Forecast</div><div style="font-size:17px;line-height:1.45;color:#2c4d57">Whether today's <b>forward rate</b> is an unbiased predictor of the future spot rate — and what market efficiency implies.</div></div>
+        <div class="card tint"><div class="card-title">6.4 · Equilibrium</div><div style="font-size:17px;line-height:1.45;color:#2c4d57">How inflation, interest, forward, and spot all line up <b>at once</b> — five parity relations forming one consistent system.</div></div>
+      </div>
+      <div class="note-box" style="margin-top:22px">Ricardo's idea (1817): if capital flowed freely to where it earns the most, profit rates would equalize everywhere. Parity conditions are the modern, currency-market version of that single idea.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · INTERNATIONAL PARITY CONDITIONS</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 : ROADMAP ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">The Big Picture</div>
+    <h2 class="slide-title">Everything connects: the parity chain</h2>
+    <div class="slide-sub">Under freely floating rates, four quantities are all proportional to one another. Move one, and the rest move with it. We will build this chain link by link, then run it live in Tool 12.</div>
+    <div class="body" style="justify-content:center">
+      <div class="chain">
+        <div class="node"><div class="nlabel">Inflation<br>Differential</div><div class="nval">−4%</div></div>
+        <div class="link"><div class="lname">Purchasing<br>Power Parity</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Interest-Rate<br>Differential</div><div class="nval">−4%</div></div>
+        <div class="link"><div class="lname">Interest<br>Rate Parity</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Forward<br>Premium</div><div class="nval">+4%</div></div>
+        <div class="link"><div class="lname">Forward =<br>Predictor</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Expected<br>Spot Change</div><div class="nval">+4%</div></div>
+      </div>
+      <div class="grid-3" style="margin-top:30px">
+        <div class="card"><div class="card-title">Fisher Effect</div><div style="font-size:15px;color:#2c4d57;line-height:1.4">Ties inflation to interest rates inside each country.</div></div>
+        <div class="card"><div class="card-title">International Fisher</div><div style="font-size:15px;color:#2c4d57;line-height:1.4">Ties the interest-rate gap to the expected change in the spot rate.</div></div>
+        <div class="card"><div class="card-title">Unbiased Forward</div><div style="font-size:15px;color:#2c4d57;line-height:1.4">Makes the forward rate the market's best guess of the future spot.</div></div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · INTERNATIONAL PARITY CONDITIONS</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 : DIVIDER 6.1 ============ -->
+<section class="slide">
+  <div class="slide-pad divider">
+    <div class="dnum">6.1</div>
+    <div class="dlabel">Section One</div>
+    <div class="dtitle">Prices &amp; Exchange Rates</div>
+    <div class="dsub">If the same thing sells in two markets with no barriers, it should cost the same everywhere. From that one rule we get the Law of One Price, Purchasing Power Parity, and the famous Big Mac Index.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 : LAW OF ONE PRICE (concept) ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · The Foundation</div>
+    <h2 class="slide-title">The Law of One Price</h2>
+    <div class="body">
+      <div class="row">
+        <div class="col">
+          <div style="font-size:20px;color:#27454f;line-height:1.5;margin-bottom:18px">If identical goods can be sold in two markets and there are <b>no transport costs or trade barriers</b>, the price should be identical in both markets — once you convert currencies.</div>
+          <div class="card tint">
+            <div class="card-title">Why it almost never holds perfectly</div>
+            <ul class="clean tight">
+              <li>Goods do <b>not</b> move between countries at zero cost.</li>
+              <li>Many services are not tradable at all (think haircuts).</li>
+              <li>Quality and tastes differ across countries.</li>
+              <li>Taxes, rents, and regulation distort local prices.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card ink" style="height:100%;display:flex;flex-direction:column;justify-content:center">
+            <div class="card-title">The two assumptions</div>
+            <div style="font-size:22px;font-weight:700;margin:10px 0">1 · Free trade</div>
+            <div style="font-size:15px;opacity:.85;margin-bottom:16px">No tariffs, quotas, or shipping frictions.</div>
+            <div style="font-size:22px;font-weight:700;margin:10px 0">2 · Perfect substitutes</div>
+            <div style="font-size:15px;opacity:.85">The product is truly identical across markets.</div>
+            <div style="margin-top:22px;font-size:15px;border-top:1px solid rgba(255,255,255,.2);padding-top:16px;opacity:.9">Relax these and the theory still guides the <b style="color:var(--sky)">long-run trend</b> — just not today's price.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 : LAW OF ONE PRICE (math) ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · The Math</div>
+    <h2 class="slide-title">From prices to an exchange rate</h2>
+    <div class="slide-sub">Knowing a product's price in two currencies lets you back out the exchange rate the market <i>should</i> set.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:center">
+        <div>
+          <div class="formula">P<span style="font-size:14px">$</span> × S<span style="font-size:14px">¥</span> = P<span style="font-size:14px">¥</span><span class="note">The dollar price times the exchange rate (yen per dollar) equals the yen price.</span></div>
+          <div class="formula" style="margin-top:18px">S<span style="font-size:14px">¥/$</span> = P<span style="font-size:14px">¥</span> ÷ P<span style="font-size:14px">$</span><span class="note">Rearranged: the implied exchange rate is just the ratio of the two local prices.</span></div>
+        </div>
+        <div class="card tint">
+          <div class="card-title">Worked example</div>
+          <div style="font-size:17px;color:#2c4d57;line-height:1.6">A basket of goods costs <b>¥1,000</b> in Japan and <b>$10</b> in the United States.</div>
+          <div class="formula" style="background:#fff;margin-top:14px">S = ¥1,000 ÷ $10 = <span class="kterm">¥100 = $1.00</span></div>
+          <div style="font-size:15px;color:#5b7d88;margin-top:14px">A wider version replaces a single product with a whole price index — that gives <b>Absolute Purchasing Power Parity</b>, coming up next.</div>
+        </div>
+      </div>
+      <div class="use-hint">▶ Next slide: try it yourself with the Law of One Price calculator</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 : TOOL 1 — LAW OF ONE PRICE ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 1 of 12</div>
+    <h2 class="slide-title sm">Law of One Price Calculator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Set the prices</div>
+          <div class="field">
+            <label>Price of the product in the U.S. <span class="val" id="t1_us_l">$10.00</span></label>
+            <input type="range" id="t1_us" min="1" max="50" step="0.5" value="10" oninput="t1()">
+            <div class="hint">What it costs in dollars.</div>
+          </div>
+          <div class="field">
+            <label>Name of the foreign currency</label>
+            <input type="text" id="t1_cur" value="Yen" oninput="t1()">
+          </div>
+          <div class="field">
+            <label>Price of the same product abroad <span class="val" id="t1_for_l">1150</span></label>
+            <input type="range" id="t1_for" min="1" max="3000" step="1" value="1150" oninput="t1()">
+            <div class="hint">What it costs in the foreign currency.</div>
+          </div>
+          <div class="field">
+            <label>Actual market rate <span class="val" id="t1_mkt_l">100.0</span></label>
+            <input type="range" id="t1_mkt" min="1" max="300" step="0.5" value="100" oninput="t1()">
+            <div class="hint">Today's real exchange rate (<span id="t1_cur2">Yen</span> per $1). Compare it to the implied rate.</div>
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div class="answer">
+            <div class="alabel">Exchange rate the Law of One Price implies</div>
+            <div class="bignum" id="t1_rate">115.00 Yen = $1.00</div>
+            <div class="asub" id="t1_expl">If the product is identical and markets are frictionless, this is the rate the market should set.</div>
+          </div>
+          <div class="row" style="gap:16px">
+            <div class="stat" style="flex:1"><div class="s-l">Implied rate</div><div class="s-v" id="t1_imp">115.00</div></div>
+            <div class="stat" style="flex:1"><div class="s-l">Actual market rate</div><div class="s-v" id="t1_act">100.00</div></div>
+            <div class="stat hl" style="flex:1.3"><div class="s-l" id="t1_verdict_l">Foreign currency is</div><div class="s-v" id="t1_verdict">—</div></div>
+          </div>
+          <div class="verdict neutral" id="t1_msg">Drag a slider to see how the implied exchange rate reacts.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8 : ABSOLUTE PPP ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · Purchasing Power Parity</div>
+    <h2 class="slide-title">Absolute PPP: one basket, one rate</h2>
+    <div class="slide-sub">Swap a single product for a whole <b>basket of goods</b> (a price index) and the same logic gives the "real" exchange rate.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:stretch">
+        <div class="card tint" style="display:flex;flex-direction:column;justify-content:center">
+          <div class="card-title">The absolute version</div>
+          <div class="formula" style="background:#fff;font-size:24px">S = PI<span style="font-size:14px">¥</span> ÷ PI<span style="font-size:14px">$</span><span class="note">The spot rate equals the ratio of the two countries' price indices. It states what the rate <i>is</i> today.</span></div>
+          <div style="font-size:16px;color:#2c4d57;margin-top:16px;line-height:1.5">"The spot exchange rate is determined by the relative prices of similar baskets of goods."</div>
+        </div>
+        <div class="col" style="display:flex;flex-direction:column;gap:18px">
+          <div class="card">
+            <div class="card-title">Two honest conclusions from the data</div>
+            <ul class="clean tight">
+              <li>PPP holds up well over the <b>very long run</b>, poorly over short periods.</li>
+              <li>It works better for countries with <b>high inflation</b> and underdeveloped capital markets.</li>
+            </ul>
+          </div>
+          <div class="note-box">Global Finance in Practice: an Uber ride costs wildly different amounts in Mumbai, Singapore, and Kuala Lumpur. Regulated fares and local wages break parity — proof that price controls distort the law of one price.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9 : BIG MAC INDEX (concept) ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · A Famous Yardstick</div>
+    <h2 class="slide-title">The Big Mac Index</h2>
+    <div class="slide-sub"><i>The Economist</i> has tracked it since 1986. A Big Mac is a near-perfect law-of-one-price product — so its price compares currencies in plain sight.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card tint">
+          <div class="card-title">Why a burger works</div>
+          <ul class="clean tight">
+            <li><b>Nearly identical everywhere</b> — same recipe, process, and brand standard.</li>
+            <li>Built from <b>local</b> ingredients, labor, and rent — so its price reflects domestic costs, not imports.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">The three-step calculation</div>
+          <ul class="clean tight">
+            <li><b>1.</b> Big Mac price in dollars = local price ÷ actual rate.</li>
+            <li><b>2.</b> Implied PPP rate = local price ÷ U.S. price.</li>
+            <li><b>3.</b> Over / under-valuation = (implied − actual) ÷ actual.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Read it carefully:</b> a big "undervaluation" signals where a currency may head over the <b>long term</b> — not what it's worth today.</div>
+      <div class="use-hint">▶ Two slides ahead: the full Big Mac Index, live for 14 countries</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10 : BIG MAC EXAMPLE (China) ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · Worked Example</div>
+    <h2 class="slide-title sm">China, step by step (Jan 2021)</h2>
+    <div class="body">
+      <div class="grid-3" style="margin-bottom:4px">
+        <div class="card tint"><div class="card-title">Step 1 · Price in dollars</div><div class="formula" style="background:#fff;font-size:18px">¥22.4 ÷ 6.4751<br>= <span class="kterm">$3.46</span></div><div style="font-size:14px;color:#5b7d88;margin-top:10px">A Big Mac in China costs only $3.46 at the market rate — cheaper than the $5.66 U.S. price.</div></div>
+        <div class="card tint"><div class="card-title">Step 2 · Implied PPP rate</div><div class="formula" style="background:#fff;font-size:18px">¥22.4 ÷ $5.66<br>= <span class="kterm">¥3.96 = $1</span></div><div style="font-size:14px;color:#5b7d88;margin-top:10px">To equalize burger prices, $1 should buy only 3.96 yuan — not 6.48.</div></div>
+        <div class="card tint"><div class="card-title">Step 3 · Valuation</div><div class="formula" style="background:#fff;font-size:18px">(3.96 − 6.48)<br>÷ 6.48 = <span class="down" style="font-weight:700">−38.9%</span></div><div style="font-size:14px;color:#5b7d88;margin-top:10px">The yuan looks <b>38.9% undervalued</b> against the dollar.</div></div>
+      </div>
+      <div class="card ink" style="margin-top:18px;display:flex;align-items:center;gap:24px">
+        <div style="font-size:48px">🍔</div>
+        <div style="font-size:17px;line-height:1.5">Same burger, two prices. The gap between the <b style="color:var(--sky)">implied rate</b> (¥3.96) and the <b style="color:var(--sky)">actual rate</b> (¥6.48) is the Big Mac Index's claim about how mispriced the currency is.</div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11 : TOOL 2 — BIG MAC EXPLORER ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 2 of 12</div>
+    <h2 class="slide-title sm">Big Mac Index Explorer</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls" style="width:340px">
+          <div class="ctl-h">Pick a country</div>
+          <div class="field">
+            <label>Country</label>
+            <select id="t2_country" onchange="t2()"></select>
+          </div>
+          <div class="statgrid c2" style="margin-bottom:14px">
+            <div class="stat"><div class="s-l">Local Big Mac price</div><div class="s-v" id="t2_local" style="font-size:20px">—</div></div>
+            <div class="stat"><div class="s-l">U.S. price</div><div class="s-v" style="font-size:20px">$5.66</div></div>
+          </div>
+          <div class="note-box" style="font-size:13.5px;padding:12px 14px">Real data from <i>The Economist</i>, January 2021. Britain &amp; the euro area are quoted as dollars per unit; the index handles the flip automatically.</div>
+        </div>
+        <div class="tool-viz">
+          <div class="answer" style="padding:18px 24px">
+            <div class="alabel" id="t2_alabel">China — versus the U.S. dollar</div>
+            <div class="bignum" id="t2_big" style="font-size:40px">−38.9% undervalued</div>
+            <div class="asub" id="t2_sub">PPP says an undervalued currency should rise over the long run to close this gap.</div>
+          </div>
+          <div class="statgrid c3">
+            <div class="stat"><div class="s-l">Big Mac in dollars</div><div class="s-v" id="t2_dollar" style="font-size:22px">$3.46</div></div>
+            <div class="stat"><div class="s-l">Implied PPP rate</div><div class="s-v" id="t2_implied" style="font-size:22px">3.96</div></div>
+            <div class="stat"><div class="s-l">Actual market rate</div><div class="s-v" id="t2_actual" style="font-size:22px">6.48</div></div>
+          </div>
+          <div class="chart">
+            <div class="chart-h">Under (red) / over (green) valuation vs. the U.S. dollar</div>
+            <div class="barwrap" id="t2_bars" style="align-items:center;border-bottom:none;position:relative"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12 : BIG MAC LIMITS ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · Reality Check</div>
+    <h2 class="slide-title">Strengths and limits</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card" style="border-top:4px solid var(--up)">
+          <div class="card-title" style="color:var(--up)">What makes it good</div>
+          <ul class="clean tight">
+            <li>The product is genuinely consistent across markets.</li>
+            <li>Priced from <b>local</b> inputs, so it reflects domestic cost levels.</li>
+            <li>Simple, vivid, and globally recognized.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top:4px solid var(--down)">
+          <div class="card-title" style="color:var(--down)">Where it breaks</div>
+          <ul class="clean tight">
+            <li>Big Macs <b>can't be traded</b> across borders.</li>
+            <li>Local rents, taxes, and wages distort the price.</li>
+            <li>It signals the long run, not today's fair value.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card tint" style="margin-top:20px">
+        <div class="card-title">The same idea, other products</div>
+        <div style="font-size:16px;color:#2c4d57;line-height:1.5">Investec built an <b>African Beer Standard</b> using a 375 ml lager — because McDonald's hadn't reached most of the continent. Any homogeneous, locally produced good can serve as a PPP yardstick.</div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13 : RELATIVE PPP ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · The Practical Version</div>
+    <h2 class="slide-title">Relative PPP: inflation moves the rate</h2>
+    <div class="slide-sub">Absolute PPP rarely nails today's rate. The relative version is more useful: it predicts the <b>change</b> in the rate from the <b>difference in inflation</b>.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:center">
+        <div class="card ink" style="height:100%;display:flex;flex-direction:column;justify-content:center">
+          <div class="card-title">The rule</div>
+          <div style="font-size:19px;line-height:1.5;margin-top:6px">If the spot rate starts in equilibrium, any change in the inflation gap is offset over the long run by an <b style="color:var(--sky)">equal and opposite</b> change in the spot rate.</div>
+          <div class="formula" style="background:rgba(255,255,255,.1);border-color:var(--sky);color:#fff;margin-top:18px;font-size:18px">S₂ = S₁ × (1+π<span style="font-size:13px">foreign</span>) ÷ (1+π<span style="font-size:13px">home</span>)</div>
+        </div>
+        <div class="card tint">
+          <div class="card-title">The intuition</div>
+          <ul class="clean tight">
+            <li>Higher inflation at home → your exports get <b>pricier</b> and less competitive.</li>
+            <li>Imports become cheaper than domestic goods.</li>
+            <li>That pushes a <b>current-account deficit</b> — unless the currency weakens to offset it.</li>
+            <li>So the high-inflation currency tends to <b>depreciate</b>.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="use-hint">▶ Next slide: forecast a future exchange rate from two inflation rates</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14 : TOOL 3 — RELATIVE PPP PREDICTOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 3 of 12</div>
+    <h2 class="slide-title sm">Relative PPP Future-Spot Predictor</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Set the inputs</div>
+          <div class="field">
+            <label>Current spot rate (foreign per $1) <span class="val" id="t3_spot_l">104.0</span></label>
+            <input type="range" id="t3_spot" min="1" max="300" step="0.5" value="104" oninput="t3()">
+          </div>
+          <div class="field">
+            <label>Home (U.S.) inflation <span class="val" id="t3_home_l">5.0%</span></label>
+            <input type="range" id="t3_home" min="0" max="20" step="0.1" value="5" oninput="t3()">
+          </div>
+          <div class="field">
+            <label>Foreign inflation <span class="val" id="t3_for_l">1.0%</span></label>
+            <input type="range" id="t3_for" min="0" max="20" step="0.1" value="1" oninput="t3()">
+          </div>
+          <div class="field">
+            <label>Years ahead <span class="val" id="t3_yr_l">5</span></label>
+            <input type="range" id="t3_yr" min="1" max="10" step="1" value="5" oninput="t3()">
+          </div>
+          <div class="note-box" style="font-size:13px;padding:11px 14px">More foreign units per dollar = the foreign currency got <b>weaker</b>. Fewer = it got <b>stronger</b>.</div>
+        </div>
+        <div class="tool-viz">
+          <div class="row" style="gap:16px">
+            <div class="answer" style="flex:1.4">
+              <div class="alabel" id="t3_yrlabel">Predicted rate in 5 years</div>
+              <div class="bignum sm" id="t3_future">100.0 = $1.00</div>
+              <div class="asub" id="t3_msg">Higher-inflation currencies tend to depreciate.</div>
+            </div>
+            <div class="stat hl" style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="s-l">Total change over the period</div><div class="s-v" id="t3_chg" style="font-size:30px">—</div></div>
+          </div>
+          <div class="chart">
+            <div class="chart-h">Projected spot rate (foreign per $1), year by year</div>
+            <div class="barwrap" id="t3_bars"></div>
+            <div class="barlabels" id="t3_labels"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15 : EMPIRICAL TESTS ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · Does It Actually Work?</div>
+    <h2 class="slide-title">Testing PPP in the real world</h2>
+    <div class="body">
+      <div class="row" style="gap:24px">
+        <div class="col">
+          <div style="font-size:19px;color:#27454f;line-height:1.5;margin-bottom:18px">Decades of testing the absolute and relative versions — and the law of one price — reach two clear verdicts.</div>
+          <div class="card tint" style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:16px"><div style="font-family:var(--mono);font-size:38px;font-weight:700;color:var(--sky-deep)">1</div><div style="font-size:17px;color:#2c4d57;line-height:1.4">PPP holds well over the <b>very long run</b>, but poorly over short periods.</div></div></div>
+          <div class="card tint"><div style="display:flex;align-items:center;gap:16px"><div style="font-family:var(--mono);font-size:38px;font-weight:700;color:var(--sky-deep)">2</div><div style="font-size:17px;color:#2c4d57;line-height:1.4">It works better for countries with <b>high inflation</b> and underdeveloped capital markets.</div></div></div>
+        </div>
+        <div class="col">
+          <div class="card ink" style="height:100%;display:flex;flex-direction:column;justify-content:center">
+            <div class="card-title">Why it fails short-term</div>
+            <ul class="clean tight" style="color:#dff3f8">
+              <li style="color:#dff3f8">Goods don't move at zero cost.</li>
+              <li style="color:#dff3f8">Many services aren't tradable.</li>
+              <li style="color:#dff3f8">Quality varies with local tastes and resources.</li>
+            </ul>
+            <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,.2);padding-top:16px;font-size:15px;opacity:.9">Takeaway: use PPP as a <b style="color:var(--sky)">long-run anchor</b>, never as a day-trading signal.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16 : REAL vs NOMINAL INDEX ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · Tracking Many Partners at Once</div>
+    <h2 class="slide-title sm">Real &amp; nominal effective exchange-rate indices</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Nominal effective index</div>
+          <div style="font-size:16px;color:#2c4d57;line-height:1.5">A trade-weighted average of a currency's <b>actual</b> rates against all partners. It says nothing about "true value" — just how the rate compares to a base period.</div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--sky)">
+          <div class="card-title">Real effective index</div>
+          <div style="font-size:16px;color:#2c4d57;line-height:1.5">Adjusts the nominal index for <b>inflation differences</b>. It shows how weighted-average <b>purchasing power</b> has shifted versus a base period.</div>
+        </div>
+      </div>
+      <div class="card tint" style="margin-top:20px;display:flex;align-items:center;gap:30px">
+        <div class="formula" style="background:#fff;font-size:22px;margin:0;flex-shrink:0">E<span style="font-size:13px">$ Real</span> = E<span style="font-size:13px">$ Nom</span> × (C<span style="font-size:13px">$</span> ÷ C<span style="font-size:13px">FC</span>)</div>
+        <div style="font-size:16px;color:#2c4d57;line-height:1.5"><b>100 = fair value.</b> Above 100 → currency is <span class="down" style="font-weight:700">overvalued</span> (exports less competitive). Below 100 → <span class="up" style="font-weight:700">undervalued</span> (exports more competitive). If PPP held perfectly, every index would sit at exactly 100.</div>
+      </div>
+      <div class="use-hint">▶ Next slide: a live valuation gauge built on this formula</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17 : TOOL 4 — REER VALUATION GAUGE ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 4 of 12</div>
+    <h2 class="slide-title sm">Currency Valuation Gauge (Real Effective Index)</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Build the index</div>
+          <div class="field">
+            <label>Nominal effective rate index <span class="val" id="t4_nom_l">100</span></label>
+            <input type="range" id="t4_nom" min="60" max="140" step="1" value="100" oninput="t4()">
+            <div class="hint">100 = the base period.</div>
+          </div>
+          <div class="field">
+            <label>Home cost level (index) <span class="val" id="t4_home_l">100</span></label>
+            <input type="range" id="t4_home" min="80" max="140" step="1" value="100" oninput="t4()">
+            <div class="hint">Domestic prices/costs vs. base.</div>
+          </div>
+          <div class="field">
+            <label>Foreign cost level (index) <span class="val" id="t4_for_l">100</span></label>
+            <input type="range" id="t4_for" min="80" max="140" step="1" value="100" oninput="t4()">
+            <div class="hint">Trading partners' prices/costs vs. base.</div>
+          </div>
+          <div class="note-box" style="font-size:13px;padding:11px 14px">When your costs rise <b>faster</b> than partners', the real index climbs above 100 and your exports lose their price edge.</div>
+        </div>
+        <div class="tool-viz">
+          <div class="answer" style="padding:18px 24px">
+            <div class="alabel">Real effective exchange-rate index</div>
+            <div class="bignum" id="t4_real" style="font-size:44px">100.0</div>
+            <div class="asub" id="t4_msg">At exactly 100 the currency is fairly valued — PPP holds.</div>
+          </div>
+          <div class="chart" style="flex:0 0 auto;padding-bottom:22px">
+            <div class="chart-h">Valuation gauge — 100 is fair value</div>
+            <div style="position:relative;height:46px;margin:30px 6px 8px">
+              <div style="position:absolute;inset:0;border-radius:23px;background:linear-gradient(90deg,#2FA56B 0%,#9bd6b8 28%,#EAF7FB 48%,#EAF7FB 52%,#f1b4af 72%,#E2615A 100%)"></div>
+              <div style="position:absolute;left:50%;top:-8px;bottom:-8px;width:2px;background:var(--sky-deep);transform:translateX(-50%)"></div>
+              <div style="position:absolute;left:50%;top:-26px;transform:translateX(-50%);font-size:12px;font-weight:800;color:var(--sky-deep)">100 · FAIR</div>
+              <div id="t4_marker" style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);transition:left .3s">
+                <div style="width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid var(--sky-ink);margin:0 auto"></div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#5b7d88;font-weight:700;padding:0 4px">
+              <span>60 · deeply undervalued</span><span class="up">more competitive</span><span class="down">less competitive</span><span>140 · overvalued</span>
+            </div>
+          </div>
+          <div class="verdict neutral" id="t4_verdict">Move a slider to see how relative costs push the currency off fair value.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18 : PASS-THROUGH (concept) ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · When Rates Move</div>
+    <h2 class="slide-title">Exchange-rate pass-through</h2>
+    <div class="slide-sub">How much of a currency move actually shows up in the <b>price</b> a foreign buyer pays. PPP assumes 100% — reality is often less.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:center">
+        <div class="card tint">
+          <div class="card-title">The Volvo example</div>
+          <div style="font-size:16.5px;color:#2c4d57;line-height:1.6">A Volvo built in Belgium costs <b>€50,000</b>. At $1.00 = €1.00 it sells for <b>$50,000</b> in the U.S. If the euro appreciates 20%:</div>
+          <div class="row" style="gap:14px;margin-top:14px">
+            <div class="stat" style="flex:1"><div class="s-l">Complete pass-through</div><div class="s-v" style="font-size:22px">$60,000</div><div style="font-size:12px;color:#5b7d88;margin-top:4px">full 20% rise</div></div>
+            <div class="stat" style="flex:1"><div class="s-l">Partial pass-through</div><div class="s-v" style="font-size:22px">$58,000</div><div style="font-size:12px;color:#5b7d88;margin-top:4px">only 16% rise</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Why a firm absorbs the move</div>
+          <ul class="clean tight">
+            <li>A full price jump could <b>crush sales volume</b> abroad.</li>
+            <li>Imported parts get <b>cheaper</b> when the home currency strengthens, cushioning costs.</li>
+            <li>Existing contracts delay when changes hit prices.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 19 : ELASTICITY ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · The Deciding Factor</div>
+    <h2 class="slide-title sm">Price elasticity sets the pass-through</h2>
+    <div class="body">
+      <div class="card tint" style="margin-bottom:18px;display:flex;align-items:center;gap:26px">
+        <div class="formula" style="background:#fff;margin:0;flex-shrink:0;font-size:20px">e<span style="font-size:13px">p</span> = %ΔQ ÷ %ΔP</div>
+        <div style="font-size:16px;color:#2c4d57;line-height:1.5">The percentage change in quantity demanded for each percentage change in price. It decides whether a firm dares to pass the currency move through.</div>
+      </div>
+      <div class="grid-2">
+        <div class="card" style="border-top:4px solid var(--up)">
+          <div class="card-title" style="color:var(--up)">Inelastic · e &lt; 1</div>
+          <ul class="clean tight">
+            <li>Quantity barely reacts to price.</li>
+            <li>Firm can pass through a lot — a higher price <b>raises revenue</b>.</li>
+            <li>High pass-through is safe.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top:4px solid var(--down)">
+          <div class="card-title" style="color:var(--down)">Elastic · e &gt; 1</div>
+          <ul class="clean tight">
+            <li>Buyers flee when price rises.</li>
+            <li>A 20% rise can <b>cut total revenue</b>.</li>
+            <li>Firm absorbs the move — low pass-through.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="use-hint">▶ Next slide: dial pass-through and elasticity and watch revenue respond</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 20 : TOOL 5 — PASS-THROUGH SIMULATOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 5 of 12</div>
+    <h2 class="slide-title sm">Exchange-Rate Pass-Through Simulator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">The exporter's pricing choice</div>
+          <div class="field">
+            <label>Starting price abroad <span class="val" id="t5_base_l">$50,000</span></label>
+            <input type="range" id="t5_base" min="5000" max="100000" step="1000" value="50000" oninput="t5()">
+          </div>
+          <div class="field">
+            <label>Producer's currency appreciates <span class="val" id="t5_appr_l">20%</span></label>
+            <input type="range" id="t5_appr" min="0" max="50" step="1" value="20" oninput="t5()">
+          </div>
+          <div class="field">
+            <label>Pass-through to buyers <span class="val" id="t5_pt_l">100%</span></label>
+            <input type="range" id="t5_pt" min="0" max="100" step="5" value="100" oninput="t5()">
+            <div class="hint">How much of the currency move the firm puts into the price.</div>
+          </div>
+          <div class="field">
+            <label>Price elasticity of demand <span class="val" id="t5_el_l">1.0</span></label>
+            <input type="range" id="t5_el" min="0" max="3" step="0.1" value="1" oninput="t5()">
+            <div class="hint">Below 1 = inelastic · above 1 = elastic.</div>
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div class="statgrid c3">
+            <div class="stat"><div class="s-l">Price buyers now pay</div><div class="s-v" id="t5_price" style="font-size:23px">$60,000</div></div>
+            <div class="stat"><div class="s-l">Price rise they see</div><div class="s-v" id="t5_rise" style="font-size:23px">+20%</div></div>
+            <div class="stat hl"><div class="s-l">Revenue impact</div><div class="s-v" id="t5_rev" style="font-size:23px">0%</div></div>
+          </div>
+          <div class="chart">
+            <div class="chart-h">Old price · full pass-through · actual price</div>
+            <div class="barwrap" id="t5_bars"></div>
+            <div class="barlabels"><span>Old price</span><span>Full pass-through</span><span>Actual price</span></div>
+          </div>
+          <div class="verdict neutral" id="t5_verdict">Inelastic demand lets the firm pass the move through and gain revenue; elastic demand forces it to absorb the cost.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 21 : EMERGING MARKETS / IMPOSSIBLE TRINITY ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.1 · Pass-Through Meets Policy</div>
+    <h2 class="slide-title sm">Emerging markets &amp; the impossible trinity</h2>
+    <div class="body">
+      <div class="row" style="gap:28px;align-items:center">
+        <div class="col">
+          <div style="font-size:17px;color:#27454f;line-height:1.55;margin-bottom:16px">A country can pick only <b>two</b> of these three at once:</div>
+          <ul class="clean tight">
+            <li><b>Pegged exchange rate</b> (stability)</li>
+            <li><b>Independent monetary policy</b></li>
+            <li><b>Free flow of capital</b></li>
+          </ul>
+          <div class="note-box" style="margin-top:16px">Many emerging markets traded a fixed rate for open capital flows. That introduced pass-through — and when their currencies appreciated, import prices fell then rose, feeding <b>inflationary pressure</b>.</div>
+        </div>
+        <div class="col" style="display:flex;justify-content:center">
+          <div style="position:relative;width:330px;height:280px">
+            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px" class="card tint"><div style="text-align:center;font-size:14px;font-weight:700;color:var(--sky-deep)">Pegged<br>Exchange Rate</div></div>
+            <div style="position:absolute;bottom:0;left:0;width:150px" class="card tint"><div style="text-align:center;font-size:14px;font-weight:700;color:var(--sky-deep)">Independent<br>Monetary Policy</div></div>
+            <div style="position:absolute;bottom:0;right:0;width:150px" class="card tint"><div style="text-align:center;font-size:14px;font-weight:700;color:var(--sky-deep)">Free Flow<br>of Capital</div></div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;z-index:-1" viewBox="0 0 330 280"><polygon points="165,55 70,225 260,225" fill="none" stroke="#63C5DA" stroke-width="2.5" stroke-dasharray="6 5"/></svg>
+            <div style="position:absolute;top:120px;left:50%;transform:translate(-50%,-50%);font-size:13px;font-weight:800;color:var(--amber);text-align:center;background:#fff;padding:4px 8px;border-radius:8px;border:1px solid rgba(242,165,65,.4)">PICK<br>TWO</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.1 PRICES &amp; EXCHANGE RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 22 : DIVIDER 6.2 ============ -->
+<section class="slide">
+  <div class="slide-pad divider">
+    <div class="dnum">6.2</div>
+    <div class="dlabel">Section Two</div>
+    <div class="dtitle">Interest Rates &amp; Exchange Rates</div>
+    <div class="dsub">Money has a price — the interest rate — and that price ties directly to currencies. From the Fisher effect we build forward rates, interest rate parity, and the arbitrage that keeps them all in line.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 23 : FISHER EFFECT CONCEPT ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · The Price of Money</div>
+    <h2 class="slide-title">The Fisher Effect</h2>
+    <div class="slide-sub">A country's nominal interest rate is built from two parts: a real return investors demand, plus compensation for expected inflation.</div>
+    <div class="body">
+      <div class="formula">i &nbsp;=&nbsp; r &nbsp;+&nbsp; &pi; &nbsp;+&nbsp; (r &times; &pi;)
+        <span class="note">i = nominal rate &nbsp;·&nbsp; r = real rate &nbsp;·&nbsp; &pi; = expected inflation &nbsp;·&nbsp; the last term is usually tiny and often dropped</span></div>
+      <div class="grid-3" style="margin-top:20px">
+        <div class="card tint"><div class="card-title">Real rate r</div><div style="font-size:15px;color:#3c5b65;line-height:1.5">The true purchasing-power return — what your money actually earns after inflation is stripped out.</div></div>
+        <div class="card tint"><div class="card-title">Inflation &pi;</div><div style="font-size:15px;color:#3c5b65;line-height:1.5">Lenders must be paid back in cheaper money, so they add expected inflation on top.</div></div>
+        <div class="card tint"><div class="card-title">Nominal rate i</div><div style="font-size:15px;color:#3c5b65;line-height:1.5">The rate you actually see quoted on a bond or deposit — real plus inflation combined.</div></div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Key implication:</b> if real rates are equal across countries, then differences in nominal rates simply reflect differences in expected inflation.</div>
+      <div class="use-hint">▶ Next slide: build the nominal rate yourself with the Fisher Calculator</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 24 : TOOL 6 — FISHER CALCULATOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 6 of 12</div>
+    <h2 class="slide-title sm">Fisher Effect Calculator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Set the two building blocks</div>
+          <div class="field">
+            <label>Real interest rate (r) <span class="val" id="t6_real_l">3.0%</span></label>
+            <input type="range" id="t6_real" min="0" max="12" step="0.1" value="3" oninput="t6()">
+          </div>
+          <div class="field">
+            <label>Expected inflation (&pi;) <span class="val" id="t6_infl_l">5.0%</span></label>
+            <input type="range" id="t6_infl" min="0" max="20" step="0.1" value="5" oninput="t6()">
+            <div class="hint">The nominal rate is what a saver would actually be quoted on a deposit.</div>
+          </div>
+          <div class="note-box" style="font-size:13.5px;padding:12px 14px">The quick rule i &asymp; r + &pi; is close, but the exact Fisher equation multiplies the two together — the gap grows when inflation is high.</div>
+        </div>
+        <div class="tool-viz">
+          <div class="answer">
+            <div class="alabel">Exact nominal interest rate</div>
+            <div class="bignum" id="t6_exact">8.15%</div>
+            <div class="asub" id="t6_msg">Investors need 8.15% just to keep their real return at 3% once 5% inflation is covered.</div>
+          </div>
+          <div class="statgrid c3">
+            <div class="stat"><div class="s-l">Quick rule (r + &pi;)</div><div class="s-v" id="t6_approx" style="font-size:24px">8.00%</div></div>
+            <div class="stat"><div class="s-l">Cross term (r &times; &pi;)</div><div class="s-v" id="t6_cross" style="font-size:24px">0.15%</div></div>
+            <div class="stat hl"><div class="s-l">Real return kept</div><div class="s-v" style="font-size:24px">3.00%</div></div>
+          </div>
+          <div class="verdict neutral" id="t6_verdict">Raise inflation toward 20% and watch the quick rule drift away from the exact answer.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 25 : INTERNATIONAL FISHER EFFECT ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · From Rates to Currencies</div>
+    <h2 class="slide-title sm">The International Fisher Effect</h2>
+    <div class="slide-sub">If real rates are equal everywhere, the currency of the country with the <b>higher</b> nominal interest rate should <b>depreciate</b> — by roughly the interest-rate difference.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">The relationship</div>
+          <div class="formula" style="font-size:18px;margin-top:4px">% change in spot &asymp; i<sub>foreign</sub> &minus; i<sub>home</sub></div>
+          <div style="font-size:15px;color:#3c5b65;line-height:1.55;margin-top:14px">A high nominal rate signals high expected inflation. That inflation erodes the currency, so the extra interest you earn is roughly cancelled by the currency's fall.</div>
+        </div>
+        <div class="card tint">
+          <div class="card-title">Why it must hold</div>
+          <ul class="clean tight">
+            <li>If a high-rate currency <b>didn't</b> fall, investors would pile in for the free extra yield.</li>
+            <li>That capital flow bids the currency up now and forces an expected decline later.</li>
+            <li>The result: <b>no free lunch</b> from chasing high interest rates alone.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Same engine as PPP:</b> there it was inflation differences that moved the currency; here it is interest-rate differences — which embed those same inflation expectations.</div>
+      <div class="use-hint">▶ Next slide: project a currency forward from an interest-rate gap</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 26 : TOOL 7 — INTERNATIONAL FISHER ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 7 of 12</div>
+    <h2 class="slide-title sm">International Fisher Effect Calculator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Two countries, two interest rates</div>
+          <div class="field">
+            <label>Current spot rate (foreign per $1) <span class="val" id="t7_spot_l">104.0</span></label>
+            <input type="range" id="t7_spot" min="1" max="300" step="0.5" value="104" oninput="t7()">
+          </div>
+          <div class="field">
+            <label>Home (U.S.) nominal rate <span class="val" id="t7_home_l">8.0%</span></label>
+            <input type="range" id="t7_home" min="0" max="20" step="0.1" value="8" oninput="t7()">
+          </div>
+          <div class="field">
+            <label>Foreign nominal rate <span class="val" id="t7_for_l">4.0%</span></label>
+            <input type="range" id="t7_for" min="0" max="20" step="0.1" value="4" oninput="t7()">
+          </div>
+          <div class="field">
+            <label>Years ahead <span class="val" id="t7_yr_l">5</span></label>
+            <input type="range" id="t7_yr" min="1" max="10" step="1" value="5" oninput="t7()">
+            <div class="hint">The lower-rate currency is expected to strengthen over time.</div>
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div class="row" style="gap:16px">
+            <div class="answer" style="flex:1.4">
+              <div class="alabel" id="t7_yrlabel">Expected rate in 5 years</div>
+              <div class="bignum sm" id="t7_future">86.1 = $1.00</div>
+              <div class="asub" id="t7_msg">The 4% currency strengthens against the 8% dollar.</div>
+            </div>
+            <div class="stat hl" style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="s-l">Total expected change</div><div class="s-v" id="t7_chg" style="font-size:30px">—</div></div>
+          </div>
+          <div class="chart">
+            <div class="chart-h">Projected spot path · foreign per $1</div>
+            <div class="barwrap" id="t7_bars"></div>
+            <div class="barlabels" id="t7_labels"></div>
+          </div>
+          <div class="verdict neutral" id="t7_verdict">Quick check: the yearly drift &asymp; foreign rate &minus; home rate = <span id="t7_approx">&minus;4.0%</span> per year.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 27 : FORWARD RATE DEFINITION ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · Locking in a Rate</div>
+    <h2 class="slide-title">The forward rate</h2>
+    <div class="slide-sub">A forward rate is an exchange rate agreed <b>today</b> for a currency trade that settles on a <b>future</b> date. It is not a forecast — it is set purely by the two countries' interest rates.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">How it is calculated</div>
+          <div class="formula" style="font-size:16px;margin-top:4px">F = S &times; (1 + i<sub>foreign</sub> &times; d/360) &nbsp;&divide;&nbsp; (1 + i<sub>home</sub> &times; d/360)</div>
+          <div style="font-size:14px;color:#5b7d88;margin-top:10px;line-height:1.5">S = spot rate · d = days forward · rates are annual. The currency with the lower interest rate sells at a <b>premium</b> forward.</div>
+        </div>
+        <div class="card tint">
+          <div class="card-title">Premium vs. discount</div>
+          <ul class="clean tight">
+            <li><b>Forward premium</b> — the foreign currency buys more dollars forward than spot. Happens when its interest rate is <b>below</b> the dollar's.</li>
+            <li><b>Forward discount</b> — it buys fewer. Happens when its rate is <b>above</b> the dollar's.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card ink" style="margin-top:18px;display:flex;align-items:center;gap:22px">
+        <div style="font-size:15px;line-height:1.5">Annualized forward premium on the foreign currency:&nbsp; <span style="font-family:var(--mono);color:var(--sky)">f = (S &minus; F) / F &times; (360/d) &times; 100</span> &nbsp;— a positive number means the market will pay more for that currency in the future.</div>
+      </div>
+      <div class="use-hint">▶ Next: a full worked example with the Swiss franc</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 28 : FORWARD SWISS-FRANC EXAMPLE ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · Worked Example</div>
+    <h2 class="slide-title sm">Swiss franc, 90 days forward</h2>
+    <div class="body">
+      <div class="grid-2" style="align-items:start">
+        <div class="card tint">
+          <div class="card-title">The setup</div>
+          <table class="data" style="margin-top:4px">
+            <tr><td class="name">Spot rate (SFr per $1)</td><td>1.4800</td></tr>
+            <tr><td class="name">U.S. dollar interest rate</td><td>8.00%</td></tr>
+            <tr><td class="name">Swiss franc interest rate</td><td>4.00%</td></tr>
+            <tr><td class="name">Days forward</td><td>90</td></tr>
+          </table>
+          <div style="font-size:14px;color:#5b7d88;margin-top:12px;line-height:1.5">The franc's interest rate (4%) sits below the dollar's (8%), so we expect the franc to trade at a forward <b>premium</b>.</div>
+        </div>
+        <div class="col">
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-title">Step 1 · Forward rate</div>
+            <div class="formula" style="font-size:15px">1.4800 &times; (1 + .04&times;90/360) &divide; (1 + .08&times;90/360)<br>= 1.4800 &times; 1.0100 &divide; 1.0200 = <span class="kterm">1.4655</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Step 2 · Annualized premium</div>
+            <div class="formula" style="font-size:15px">(1.4800 &minus; 1.4655) &divide; 1.4655 &times; (360/90)<br>= <span class="up" style="font-weight:700">+3.96% premium</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:16px"><b>Read it:</b> it takes fewer francs to buy a dollar forward (1.4655 &lt; 1.4800), so the franc is worth <b>more</b> in the future — exactly the +3.96% premium the lower interest rate implies.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 29 : TOOL 8 — FORWARD RATE CALCULATOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 8 of 12</div>
+    <h2 class="slide-title sm">Forward Rate &amp; Premium Calculator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Price a forward contract</div>
+          <div class="field">
+            <label>Spot rate (foreign per $1) <span class="val" id="t8_spot_l">1.4800</span></label>
+            <input type="range" id="t8_spot" min="0.5" max="200" step="0.01" value="1.48" oninput="t8()">
+          </div>
+          <div class="field">
+            <label>Home (U.S.) interest rate <span class="val" id="t8_home_l">8.0%</span></label>
+            <input type="range" id="t8_home" min="0" max="20" step="0.1" value="8" oninput="t8()">
+          </div>
+          <div class="field">
+            <label>Foreign interest rate <span class="val" id="t8_for_l">4.0%</span></label>
+            <input type="range" id="t8_for" min="0" max="20" step="0.1" value="4" oninput="t8()">
+          </div>
+          <div class="field">
+            <label>Days forward <span class="val" id="t8_days_l">90</span></label>
+            <input type="range" id="t8_days" min="30" max="360" step="30" value="90" oninput="t8()">
+            <div class="hint">Lower foreign rate &rarr; forward premium. Higher foreign rate &rarr; forward discount.</div>
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div class="row" style="gap:16px">
+            <div class="answer" style="flex:1.3">
+              <div class="alabel">Forward rate</div>
+              <div class="bignum sm" id="t8_fwd">1.4655 = $1.00</div>
+              <div class="asub" id="t8_msg">The franc costs fewer units forward — it is stronger in the future.</div>
+            </div>
+            <div class="stat hl" style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="s-l">Annualized premium on foreign currency</div><div class="s-v" id="t8_prem" style="font-size:28px">+3.96%</div></div>
+          </div>
+          <div class="statgrid c3">
+            <div class="stat"><div class="s-l">Spot</div><div class="s-v" id="t8_s" style="font-size:22px">1.4800</div></div>
+            <div class="stat"><div class="s-l">Forward</div><div class="s-v" id="t8_f" style="font-size:22px">1.4655</div></div>
+            <div class="stat"><div class="s-l">Rate gap (home &minus; foreign)</div><div class="s-v" id="t8_gap" style="font-size:22px">+4.0%</div></div>
+          </div>
+          <div class="verdict good" id="t8_verdict">Because the foreign rate is lower, the currency trades at a forward premium.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 30 : INTEREST RATE PARITY CONCEPT ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · The No-Arbitrage Rule</div>
+    <h2 class="slide-title">Interest Rate Parity (IRP)</h2>
+    <div class="slide-sub">Two ways to invest cash for 90 days must pay the same once the exchange-rate risk is removed with a forward contract. If they don't, free money exists.</div>
+    <div class="body">
+      <div class="chain" style="margin-top:6px">
+        <div class="node"><div class="nlabel">Start with<br>$1 at home</div></div>
+        <div class="link"><div class="lname">Invest at home rate</div><div class="arrow"></div></div>
+        <div class="node" style="background:#fff"><div class="nlabel">$ &times; (1 + i<sub>$</sub>)</div></div>
+      </div>
+      <div style="text-align:center;font-size:14px;color:var(--sky-deep);font-weight:800;letter-spacing:1px;margin:14px 0 6px">— MUST EQUAL —</div>
+      <div class="chain" style="margin-top:0">
+        <div class="node"><div class="nlabel">Convert $1<br>to foreign</div></div>
+        <div class="link"><div class="lname">at spot S</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Invest at<br>foreign rate</div></div>
+        <div class="link"><div class="lname">&times; (1 + i<sub>f</sub>)</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Convert back<br>forward at F</div></div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>The parity condition:</b> (1 + i<sub>home</sub>) = S &times; (1 + i<sub>foreign</sub>) &divide; F. Rearranged, it says the forward premium must equal the interest-rate differential. When it holds, both routes tie.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 31 : COVERED INTEREST ARBITRAGE (CIA) ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · When Parity Breaks</div>
+    <h2 class="slide-title sm">Covered Interest Arbitrage (CIA)</h2>
+    <div class="slide-sub">When the forward rate is mispriced, a trader can borrow in one currency, invest covered in the other, and lock in a riskless profit — until the trades themselves push parity back.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:start">
+        <div class="card tint">
+          <div class="card-title">The arbitrageur's loop</div>
+          <ul class="clean tight">
+            <li>Spot the currency offering the better <b>covered</b> return.</li>
+            <li>Convert in at spot, invest at that currency's rate.</li>
+            <li>Sell the proceeds <b>forward</b> today, so the exit rate is locked.</li>
+            <li>Pocket the difference — <b>no open currency risk</b>.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Worked figures — $1,000,000, 180 days</div>
+          <table class="data" style="margin-top:4px">
+            <tr><td class="name">Spot (&yen; per $)</td><td>106.00</td></tr>
+            <tr><td class="name">Forward, 180d (&yen; per $)</td><td>103.50</td></tr>
+            <tr><td class="name">Dollar rate</td><td>8.00%</td></tr>
+            <tr><td class="name">Yen rate</td><td>4.00%</td></tr>
+          </table>
+          <div class="note-box" style="margin-top:12px;font-size:13.5px;padding:11px 14px">Even though the dollar pays a higher rate, the yen's forward premium more than makes up for it — so the covered yen route wins.</div>
+        </div>
+      </div>
+      <div class="use-hint">▶ Two slides ahead: run both routes side by side in the CIA Box</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 32 : CIA RULE OF THUMB ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · A Shortcut</div>
+    <h2 class="slide-title">The CIA rule of thumb</h2>
+    <div class="body">
+      <div class="card ink" style="margin-top:6px;padding:26px 30px">
+        <div style="font-size:20px;line-height:1.5;text-align:center">Invest where the <b style="color:var(--sky)">sum</b> is larger:<br><span style="font-family:var(--mono);font-size:22px;color:#fff">interest rate &nbsp;+&nbsp; forward premium on that currency</span></div>
+      </div>
+      <div class="grid-2" style="margin-top:22px">
+        <div class="card tint">
+          <div class="card-title">Dollar route</div>
+          <div style="font-family:var(--mono);font-size:17px;color:var(--sky-ink);line-height:1.7">8.0% interest<br>+ 0.0% (it's the home base)<br>= <b>8.0%</b></div>
+        </div>
+        <div class="card tint" style="border:1.5px solid var(--up)">
+          <div class="card-title" style="color:var(--up)">Covered yen route</div>
+          <div style="font-family:var(--mono);font-size:17px;color:var(--sky-ink);line-height:1.7">4.0% interest<br>+ ~4.9% forward premium<br>= <b style="color:var(--up)">~8.9% &mdash; winner</b></div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:20px"><b>So the move is:</b> borrow dollars, invest in yen, cover forward. The ~0.9% edge is the riskless profit — which arbitrage quickly competes away until the two sums match and parity is restored.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 33 : TOOL 9 — CIA BOX SIMULATOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 9 of 12</div>
+    <h2 class="slide-title sm">Covered Interest Arbitrage Box</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls wide">
+          <div class="ctl-h">Compare the two covered routes</div>
+          <div class="field">
+            <label>Amount to invest ($) <span class="val" id="t9_amt_l">$1,000,000</span></label>
+            <input type="range" id="t9_amt" min="100000" max="5000000" step="100000" value="1000000" oninput="t9()">
+          </div>
+          <div class="field">
+            <label>Spot rate (foreign per $1) <span class="val" id="t9_spot_l">106.00</span></label>
+            <input type="range" id="t9_spot" min="1" max="200" step="0.5" value="106" oninput="t9()">
+          </div>
+          <div class="field">
+            <label>Forward rate (foreign per $1) <span class="val" id="t9_fwd_l">103.50</span></label>
+            <input type="range" id="t9_fwd" min="1" max="200" step="0.5" value="103.5" oninput="t9()">
+          </div>
+          <div class="field">
+            <label>Home (U.S.) interest rate <span class="val" id="t9_home_l">8.0%</span></label>
+            <input type="range" id="t9_home" min="0" max="20" step="0.1" value="8" oninput="t9()">
+          </div>
+          <div class="field">
+            <label>Foreign interest rate <span class="val" id="t9_for_l">4.0%</span></label>
+            <input type="range" id="t9_for" min="0" max="20" step="0.1" value="4" oninput="t9()">
+          </div>
+          <div class="field">
+            <label>Days <span class="val" id="t9_days_l">180</span></label>
+            <input type="range" id="t9_days" min="30" max="360" step="30" value="180" oninput="t9()">
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div class="flowbox">
+            <div class="flow-grid">
+              <div class="fnode" id="t9_homebox"><div class="fn-l">Route A · Invest at home</div><div class="fn-v" id="t9_home_end">$1,040,000</div></div>
+              <div class="fmid">vs.</div>
+              <div class="fnode win" id="t9_forbox"><div class="fn-l">Route B · Covered abroad</div><div class="fn-v" id="t9_for_end">$1,044,638</div></div>
+              <div class="farrow" style="grid-column:1">&darr;</div>
+              <div></div>
+              <div class="farrow" style="grid-column:3">&darr;</div>
+              <div class="fmid" style="grid-column:1">keep $ · earn i<sub>$</sub></div>
+              <div class="fmid">profit =<br>B &minus; A</div>
+              <div class="fmid" style="grid-column:3">$ &rarr; spot &rarr; i<sub>f</sub> &rarr; forward back</div>
+            </div>
+          </div>
+          <div class="row" style="gap:16px">
+            <div class="answer" style="flex:1.3">
+              <div class="alabel">Riskless arbitrage profit</div>
+              <div class="bignum sm" id="t9_profit">+$4,638</div>
+              <div class="asub" id="t9_dir">Borrow dollars, invest covered in the foreign currency.</div>
+            </div>
+            <div class="stat hl" style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="s-l">Does interest rate parity hold?</div><div class="s-v" id="t9_irp" style="font-size:20px">No — gap exists</div></div>
+          </div>
+          <div class="verdict good" id="t9_verdict">A profit means the forward rate is mispriced — arbitrage would push it back to parity.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 34 : UNCOVERED INTEREST ARBITRAGE / CARRY TRADE ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · Betting on the Spread</div>
+    <h2 class="slide-title sm">Uncovered carry trade</h2>
+    <div class="slide-sub">Skip the forward cover and you have the <b>carry trade</b>: borrow a low-rate currency, invest in a high-rate one, and hope the exchange rate doesn't move against you. The interest gap is the reward; the currency is the risk.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card tint">
+          <div class="card-title">Covered vs. uncovered</div>
+          <ul class="clean tight">
+            <li><b>Covered (CIA):</b> lock the exit rate forward &mdash; riskless, and parity erases the profit.</li>
+            <li><b>Uncovered (carry):</b> leave the exit rate open &mdash; you keep the full interest gap <b>if</b> the currency cooperates.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top:4px solid var(--down)">
+          <div class="card-title" style="color:var(--down)">The hidden danger</div>
+          <div style="font-size:15px;color:#3c5b65;line-height:1.55">International Fisher warns the high-rate currency <i>should</i> fall. If it falls far enough, the currency loss wipes out the interest gain — and leverage turns that into a disaster.</div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Real-world face:</b> for two decades, Japanese retail investors — nicknamed <b>Mrs. Watanabe</b> — borrowed cheap yen to chase higher yields abroad. We model her trade at the end of this deck.</div>
+      <div class="use-hint">▶ Next slide: run a live carry trade — a winner and a loser</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 35 : TOOL 10 — CARRY TRADE SIMULATOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 10 of 12</div>
+    <h2 class="slide-title sm">Carry Trade Simulator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls wide">
+          <div class="ctl-h">Load a real scenario</div>
+          <div class="btnrow" style="margin-bottom:14px">
+            <button class="btn block" onclick="t10preset('aud')">🇦🇺 Aussie&ndash;Yen &middot; winner</button>
+            <button class="btn ghost block" onclick="t10preset('eur')">🇮🇳 Euro&ndash;Rupee &middot; loser</button>
+          </div>
+          <div class="field">
+            <label>Borrow amount <span class="val" id="t10_borrow_l">&yen;50,000,000</span></label>
+            <input type="number" id="t10_borrow" value="50000000" oninput="t10()">
+            <div class="hint" id="t10_fundlbl">Funding currency: Japanese yen</div>
+          </div>
+          <div class="field">
+            <label>Borrow (funding) rate <span class="val" id="t10_brate_l">1.0%</span></label>
+            <input type="range" id="t10_brate" min="0" max="15" step="0.1" value="1" oninput="t10()">
+          </div>
+          <div class="field">
+            <label>Invest (foreign) rate <span class="val" id="t10_irate_l">4.5%</span></label>
+            <input type="range" id="t10_irate" min="0" max="15" step="0.1" value="4.5" oninput="t10()">
+            <div class="hint" id="t10_investlbl">Investing in: Australian dollars</div>
+          </div>
+          <div class="field">
+            <label id="t10_s0lbl">Start spot (&yen; per A$)</label>
+            <input type="number" id="t10_s0" value="60.91" step="0.01" oninput="t10()">
+          </div>
+          <div class="field">
+            <label id="t10_s1lbl">End spot (&yen; per A$)</label>
+            <input type="number" id="t10_s1" value="83.19" step="0.01" oninput="t10()">
+          </div>
+          <div class="field">
+            <label>Holding period (days) <span class="val" id="t10_days_l">360</span></label>
+            <input type="range" id="t10_days" min="30" max="365" step="5" value="360" oninput="t10()">
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div class="answer">
+            <div class="alabel">Profit / loss on the trade</div>
+            <div class="bignum sm" id="t10_profit">+&yen;20,862,297</div>
+            <div class="asub" id="t10_ret">A 41.7% return — the Aussie dollar rose instead of falling.</div>
+          </div>
+          <div class="statgrid c2">
+            <div class="stat"><div class="s-l">Converted in</div><div class="s-v" id="t10_conv" style="font-size:19px">A$820,883</div></div>
+            <div class="stat"><div class="s-l">After investing</div><div class="s-v" id="t10_grown" style="font-size:19px">A$857,823</div></div>
+            <div class="stat"><div class="s-l">Converted back</div><div class="s-v" id="t10_back" style="font-size:19px">&yen;71,362,297</div></div>
+            <div class="stat"><div class="s-l">Owed at payoff</div><div class="s-v" id="t10_owe" style="font-size:19px">&yen;50,500,000</div></div>
+          </div>
+          <div class="verdict good" id="t10_verdict">Carry trades win when the funding currency stays weak — and blow up when it snaps back.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 36 : EQUILIBRIUM AMONG THE FOUR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.2 · Putting It Together</div>
+    <h2 class="slide-title sm">Where all the rates settle</h2>
+    <div class="slide-sub">Spot, forward, interest rates, and inflation are not four free numbers — they are locked together. Arbitrage drives the market toward a single equilibrium point where every parity condition holds at once.</div>
+    <div class="body">
+      <div class="grid-3">
+        <div class="card tint"><div class="card-title">Off equilibrium</div><div style="font-size:14.5px;color:#3c5b65;line-height:1.5">If forward premium &ne; interest gap, covered arbitrage (CIA) profits flow until the gap closes.</div></div>
+        <div class="card tint"><div class="card-title">The pull</div><div style="font-size:14.5px;color:#3c5b65;line-height:1.5">Each trade nudges spot, forward, or rates back toward parity. The profit shrinks as it does.</div></div>
+        <div class="card tint"><div class="card-title">At equilibrium</div><div style="font-size:14.5px;color:#3c5b65;line-height:1.5">Forward premium = interest differential = expected inflation differential = expected spot change.</div></div>
+      </div>
+      <div class="card ink" style="margin-top:20px;padding:22px 28px;text-align:center">
+        <div style="font-size:18px;line-height:1.5">At the equilibrium point, a 4% interest differential, a 4% forward premium, a 4% inflation gap, and a 4% expected currency move are <b style="color:var(--sky)">all the same 4%</b> — viewed through four different windows.</div>
+      </div>
+      <div class="use-hint">▶ Section 6.4 will draw this as a single diagram — and Tool 12 makes it live</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.2 INTEREST RATES</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 37 : DIVIDER 6.3 ============ -->
+<section class="slide">
+  <div class="slide-pad divider">
+    <div class="dnum">6.3</div>
+    <div class="dlabel">Section Three</div>
+    <div class="dtitle">The Forward Rate as a Predictor</div>
+    <div class="dsub">If markets are efficient, today's forward rate is the market's best unbiased guess of the future spot rate. Individual guesses miss — but the misses should cancel out, averaging to zero.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 38 : UNBIASED PREDICTOR CONCEPT ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.3 · A Noisy but Centered Guess</div>
+    <h2 class="slide-title sm">Forward = unbiased predictor</h2>
+    <div class="slide-sub">"Unbiased" does not mean accurate. Each period the actual spot lands above or below the forward — sometimes by a lot — but with <b>no systematic tilt</b> in either direction.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">What unbiased means</div>
+          <ul class="clean tight">
+            <li>The forward rate sits in the <b>middle</b> of the range of possible future spots.</li>
+            <li>Errors are random &mdash; overshoot and undershoot are equally likely.</li>
+            <li>Average the errors over many periods and they trend toward <b>zero</b>.</li>
+          </ul>
+        </div>
+        <div class="card tint">
+          <div class="card-title">Why it follows from efficiency</div>
+          <div style="font-size:15px;color:#3c5b65;line-height:1.55">If the forward consistently <i>over</i>-predicted, traders would bet against it and profit. Those bets would move the forward until the bias disappeared. A persistent error is a money-making signal — so it can't last.</div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>The catch:</b> "on average, eventually" is cold comfort on any single trade. The forward is centered, but the spread around it is exactly the currency risk a hedger pays to avoid.</div>
+      <div class="use-hint">▶ Next: simulate dozens of outcomes and watch the average error collapse</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.3 FORWARD AS PREDICTOR</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 39 : TOOL 11 — FORECAST ERROR SIMULATOR ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 11 of 12</div>
+    <h2 class="slide-title sm">Forecast-Error Simulator</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Run the market many times</div>
+          <div class="field">
+            <label>Forward rate (the prediction) <span class="val" id="t11_fwd_l">100.0</span></label>
+            <input type="range" id="t11_fwd" min="50" max="150" step="1" value="100" oninput="t11draw()">
+          </div>
+          <div class="field">
+            <label>Currency volatility <span class="val" id="t11_vol_l">4.0%</span></label>
+            <input type="range" id="t11_vol" min="0" max="15" step="0.5" value="4" oninput="t11draw()">
+          </div>
+          <div class="field">
+            <label>Number of periods <span class="val" id="t11_n_l">40</span></label>
+            <input type="range" id="t11_n" min="6" max="80" step="1" value="40" oninput="t11draw()">
+          </div>
+          <div class="field">
+            <label>Market bias <span class="val" id="t11_bias_l">0.0%</span></label>
+            <input type="range" id="t11_bias" min="-6" max="6" step="0.5" value="0" oninput="t11draw()">
+            <div class="hint">Leave bias at 0 for an efficient market. Add bias to break efficiency and see the error stop cancelling.</div>
+          </div>
+          <button class="btn amber block" onclick="t11draw()" style="margin-top:4px">↻ Re-run simulation</button>
+        </div>
+        <div class="tool-viz">
+          <div class="row" style="gap:16px">
+            <div class="answer" style="flex:1.3">
+              <div class="alabel">Average forecast error</div>
+              <div class="bignum sm" id="t11_err">&asymp; 0.0</div>
+              <div class="asub" id="t11_msg">Across all periods the misses nearly cancel — the forward was unbiased.</div>
+            </div>
+            <div class="stat hl" style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="s-l">Average realized spot</div><div class="s-v" id="t11_avg" style="font-size:26px">100.0</div></div>
+          </div>
+          <div class="chart">
+            <div class="chart-h">Each bar = one period's spot vs. the forward line</div>
+            <div id="t11_chart" style="position:relative;flex:1;min-height:0;border-radius:8px;background:linear-gradient(180deg,rgba(47,165,107,.05),rgba(226,97,90,.05))"></div>
+          </div>
+          <div class="verdict good" id="t11_verdict">With zero bias the average error sits near zero, no matter how wild any single period was.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.3 FORWARD AS PREDICTOR</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 40 : IS THE FX MARKET EFFICIENT? ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.3 · The Debate</div>
+    <h2 class="slide-title">Is the currency market efficient?</h2>
+    <div class="slide-sub">If forward rates are truly unbiased, speculation can't earn consistent profits and hedging the forward costs nothing on average. The evidence is mixed.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card" style="border-top:4px solid var(--up)">
+          <div class="card-title" style="color:var(--up)">Points toward efficient</div>
+          <ul class="clean tight">
+            <li>Major currencies are <b>deeply traded</b> with low transaction costs.</li>
+            <li>Information spreads almost instantly across global desks.</li>
+            <li>Over long horizons, forward errors do roughly average out.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top:4px solid var(--down)">
+          <div class="card-title" style="color:var(--down)">Points toward inefficient</div>
+          <ul class="clean tight">
+            <li>The <b>carry trade</b> earned positive returns for years — a forward-bias puzzle.</li>
+            <li>Currencies <b>overshoot</b> and trend longer than fundamentals justify.</li>
+            <li>Central-bank intervention can hold rates away from parity.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Working conclusion:</b> the market is <i>close</i> to efficient for big currencies over long periods, but short-run biases are real enough to fund entire trading strategies — and to blow them up.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.3 FORWARD AS PREDICTOR</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 41 : DIVIDER 6.4 ============ -->
+<section class="slide">
+  <div class="slide-pad divider">
+    <div class="dnum">6.4</div>
+    <div class="dlabel">Section Four</div>
+    <div class="dtitle">Everything in Equilibrium</div>
+    <div class="dsub">Five parity relationships, one diagram. Prices, interest rates, forward rates, and spot rates all lock to the same differential — the chapter's grand unifying picture.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 42 : FIVE RELATIONS OVERVIEW ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.4 · The Five Links</div>
+    <h2 class="slide-title sm">Five relationships, one differential</h2>
+    <div class="slide-sub">Each parity condition connects two of the four corner quantities. Together they say a single percentage — the country differential — shows up everywhere.</div>
+    <div class="body">
+      <div class="statgrid c2" style="gap:14px">
+        <div class="card tint" style="padding:16px 18px"><div style="display:flex;gap:10px;align-items:baseline"><span class="pill neutral">A</span><b style="color:var(--sky-deep);font-size:16px">Purchasing Power Parity</b></div><div style="font-size:14px;color:#3c5b65;margin-top:6px;line-height:1.45">Inflation differential &rarr; expected change in the spot rate.</div></div>
+        <div class="card tint" style="padding:16px 18px"><div style="display:flex;gap:10px;align-items:baseline"><span class="pill neutral">B</span><b style="color:var(--sky-deep);font-size:16px">Fisher Effect</b></div><div style="font-size:14px;color:#3c5b65;margin-top:6px;line-height:1.45">Inflation differential &rarr; nominal interest-rate differential.</div></div>
+        <div class="card tint" style="padding:16px 18px"><div style="display:flex;gap:10px;align-items:baseline"><span class="pill neutral">C</span><b style="color:var(--sky-deep);font-size:16px">International Fisher Effect</b></div><div style="font-size:14px;color:#3c5b65;margin-top:6px;line-height:1.45">Interest-rate differential &rarr; expected change in the spot rate.</div></div>
+        <div class="card tint" style="padding:16px 18px"><div style="display:flex;gap:10px;align-items:baseline"><span class="pill neutral">D</span><b style="color:var(--sky-deep);font-size:16px">Interest Rate Parity</b></div><div style="font-size:14px;color:#3c5b65;margin-top:6px;line-height:1.45">Interest-rate differential &rarr; forward premium or discount.</div></div>
+      </div>
+      <div class="card ink" style="margin-top:14px;padding:15px 20px;display:flex;align-items:center;gap:12px"><span class="pill amber">E</span><div style="font-size:15px;line-height:1.45"><b style="color:var(--sky)">Forward Rate Unbiased Predictor</b> &mdash; the forward premium equals the market's expected change in the spot rate.</div></div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.4 EQUILIBRIUM</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 43 : WALKING THE LOOP ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">6.4 · One Lap Around</div>
+    <h2 class="slide-title sm">Walking the parity loop</h2>
+    <div class="slide-sub">Start at any corner with a 4% differential and follow the relationships all the way around — you arrive back where you began. That consistency is the whole point.</div>
+    <div class="body">
+      <div class="chain" style="margin-top:10px">
+        <div class="node"><div class="nlabel">Inflation gap</div><div class="nval">+4%</div></div>
+        <div class="link"><div class="lname">PPP</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Expected spot change</div><div class="nval">+4%</div></div>
+        <div class="link"><div class="lname">Unbiased forward</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Forward premium</div><div class="nval">+4%</div></div>
+      </div>
+      <div class="chain" style="margin-top:16px">
+        <div class="node"><div class="nlabel">Forward premium</div><div class="nval">+4%</div></div>
+        <div class="link"><div class="lname">Interest Rate Parity</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Interest-rate gap</div><div class="nval">+4%</div></div>
+        <div class="link"><div class="lname">Fisher Effect</div><div class="arrow"></div></div>
+        <div class="node"><div class="nlabel">Inflation gap</div><div class="nval">+4%</div></div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Back to start.</b> The interest-rate gap also predicts the spot change directly (International Fisher) — a shortcut straight across the loop. Every path agrees.</div>
+      <div class="use-hint">▶ Final tool: change one input and watch all five corners move together</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.4 EQUILIBRIUM</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 44 : TOOL 12 — PARITY EQUILIBRIUM DASHBOARD ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Live Tool 12 of 12</div>
+    <h2 class="slide-title sm">Parity Equilibrium Dashboard</h2>
+    <div class="body">
+      <div class="tool">
+        <div class="tool-controls">
+          <div class="ctl-h">Set the economic inputs</div>
+          <div class="field">
+            <label>Spot rate (foreign per $1) <span class="val" id="t12_spot_l">104.0</span></label>
+            <input type="range" id="t12_spot" min="1" max="300" step="0.5" value="104" oninput="t12()">
+          </div>
+          <div class="field">
+            <label>Home (U.S.) inflation <span class="val" id="t12_hinf_l">5.0%</span></label>
+            <input type="range" id="t12_hinf" min="0" max="20" step="0.1" value="5" oninput="t12()">
+          </div>
+          <div class="field">
+            <label>Foreign inflation <span class="val" id="t12_finf_l">1.0%</span></label>
+            <input type="range" id="t12_finf" min="0" max="20" step="0.1" value="1" oninput="t12()">
+          </div>
+          <div class="field">
+            <label>Common real interest rate <span class="val" id="t12_real_l">3.0%</span></label>
+            <input type="range" id="t12_real" min="0" max="10" step="0.1" value="3" oninput="t12()">
+            <div class="hint">Real rates are equal across countries — the assumption that links everything.</div>
+          </div>
+          <div class="statgrid c2" style="margin-top:6px">
+            <div class="stat"><div class="s-l">Home nominal rate</div><div class="s-v" id="t12_ihome" style="font-size:18px">8.15%</div></div>
+            <div class="stat"><div class="s-l">Foreign nominal rate</div><div class="s-v" id="t12_ifor" style="font-size:18px">4.03%</div></div>
+            <div class="stat"><div class="s-l">PPP future spot</div><div class="s-v" id="t12_ppp" style="font-size:18px">100.0</div></div>
+            <div class="stat"><div class="s-l">IRP forward rate</div><div class="s-v" id="t12_fwd" style="font-size:18px">100.0</div></div>
+          </div>
+        </div>
+        <div class="tool-viz">
+          <div style="position:relative;flex:1;min-height:0;background:#fff;border:1px solid var(--sky-line);border-radius:14px;padding:8px">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+              <polygon points="18,20 82,20 82,80 18,80" fill="none" stroke="#BFE6F0" stroke-width="0.6"/>
+              <line x1="18" y1="20" x2="82" y2="80" stroke="#BFE6F0" stroke-width="0.6" stroke-dasharray="2 1.5"/>
+            </svg>
+            <div style="position:absolute;top:8px;left:8px;width:30%" class="card tint" id="tc1"><div class="card-title" style="font-size:10.5px;margin-bottom:4px">Spot rate change</div><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--up)" id="t12_spot_c">+4.0%</div></div>
+            <div style="position:absolute;top:8px;right:8px;width:30%;text-align:right" class="card tint"><div class="card-title" style="font-size:10.5px;margin-bottom:4px">Forward premium</div><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--up)" id="t12_fwd_c">+4.0%</div></div>
+            <div style="position:absolute;bottom:8px;left:8px;width:30%" class="card tint"><div class="card-title" style="font-size:10.5px;margin-bottom:4px">Inflation gap</div><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--sky-deep)" id="t12_inf_c">+4.0%</div></div>
+            <div style="position:absolute;bottom:8px;right:8px;width:30%;text-align:right" class="card tint"><div class="card-title" style="font-size:10.5px;margin-bottom:4px">Interest gap</div><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--sky-deep)" id="t12_int_c">+4.0%</div></div>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;background:var(--sky-ink);color:#fff;border-radius:12px;padding:10px 16px;z-index:2"><div style="font-size:10px;letter-spacing:1px;color:var(--sky);font-weight:700">EQUILIBRIUM</div><div style="font-family:var(--mono);font-size:22px;font-weight:700" id="t12_center">&asymp; +4%</div></div>
+            <div style="position:absolute;top:50%;left:18%;transform:translate(-50%,-50%) rotate(-90deg);font-size:9.5px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px">PPP</div>
+            <div style="position:absolute;top:50%;right:18%;transform:translate(50%,-50%) rotate(90deg);font-size:9.5px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px">PARITY</div>
+            <div style="position:absolute;top:15%;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px">UNBIASED FWD</div>
+            <div style="position:absolute;bottom:14%;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:800;color:var(--sky-deep);letter-spacing:.5px">FISHER</div>
+            <div style="position:absolute;top:54%;left:50%;transform:translate(-50%,-50%) rotate(36deg);font-size:9px;font-weight:800;color:var(--amber);letter-spacing:.3px">INT'L FISHER</div>
+          </div>
+          <div class="verdict good" id="t12_msg">All four corners read the same differential — every road leads to a spot rate near 100.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · 6.4 EQUILIBRIUM</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 45 : MINI-CASE DIVIDER ============ -->
+<section class="slide">
+  <div class="slide-pad divider" style="background:linear-gradient(130deg,#0c5f7a,#1f8fae)">
+    <div class="dnum">¥</div>
+    <div class="dlabel">Mini-Case</div>
+    <div class="dtitle">Mrs. Watanabe &amp; the Yen Carry Trade</div>
+    <div class="dsub">For two decades, ordinary Japanese investors borrowed near-zero-cost yen to chase yield around the world — turning the carry trade from a textbook idea into a global force.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 46 : YEN CARRY TRADE BACKGROUND ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Mini-Case · Background</div>
+    <h2 class="slide-title sm">Who is "Mrs. Watanabe"?</h2>
+    <div class="slide-sub">A nickname for Japan's legions of retail currency investors — often households managing savings — who collectively moved enough money to sway global exchange rates.</div>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card tint">
+          <div class="card-title">The setup</div>
+          <ul class="clean tight">
+            <li>Japanese interest rates sat near <b>zero</b> for years after the 1990s.</li>
+            <li>Yields abroad &mdash; Australia, New Zealand, emerging markets &mdash; were far higher.</li>
+            <li>Borrowing yen to invest abroad captured the gap, period after period.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">The mechanics</div>
+          <div class="formula" style="font-size:15px;margin-top:2px">Borrow &yen; cheap &rarr; convert to a high-yield currency &rarr; earn the spread &rarr; convert back later</div>
+          <div style="font-size:14px;color:#5b7d88;margin-top:12px;line-height:1.5">It works beautifully <b>as long as the yen stays weak or falls</b>. The danger is a sudden yen rally that erases years of gains at once.</div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:18px"><b>Why it matters:</b> this is the uncovered carry trade from Section 6.2, lived out at national scale — a direct test of whether International Fisher really makes the high-yield currency fall.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · MINI-CASE</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 47 : WHY JAPAN ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Mini-Case · Three Forces</div>
+    <h2 class="slide-title">Why Japan, why then</h2>
+    <div class="body">
+      <div class="grid-3" style="margin-top:8px">
+        <div class="card" style="border-top:4px solid var(--sky)">
+          <div style="font-size:34px;margin-bottom:8px">1️⃣</div>
+          <div class="card-title">Ultra-low rates</div>
+          <div style="font-size:14.5px;color:#3c5b65;line-height:1.5">A long fight against deflation pinned Japanese interest rates near zero, making yen the cheapest funding currency on earth.</div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--sky)">
+          <div style="font-size:34px;margin-bottom:8px">2️⃣</div>
+          <div class="card-title">Open capital flows</div>
+          <div style="font-size:14.5px;color:#3c5b65;line-height:1.5">Japanese savers could freely move money abroad, and high-saving households had ample funds to deploy in search of yield.</div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--sky)">
+          <div style="font-size:34px;margin-bottom:8px">3️⃣</div>
+          <div class="card-title">A persistently weak yen</div>
+          <div style="font-size:14.5px;color:#3c5b65;line-height:1.5">For long stretches the yen drifted sideways or weakened &mdash; so the feared currency loss never showed up, and the spread was pure profit.</div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:20px"><b>The paradox:</b> International Fisher says the low-rate yen should <i>appreciate</i>, cancelling the trade. For years it didn't &mdash; which is exactly the forward-rate-bias puzzle that makes economists question full market efficiency.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · MINI-CASE</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 48 : AUSSIE-YEN WIN ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Mini-Case · The Winner</div>
+    <h2 class="slide-title sm">Aussie&ndash;yen: the trade that worked</h2>
+    <div class="slide-sub">Borrow yen at ~1%, invest in Australian dollars at ~4.5%, and — crucially — the Aussie dollar <b>rose</b> against the yen over the period. Both the interest gap and the currency move paid off.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:start">
+        <div class="card tint">
+          <div class="card-title">The numbers</div>
+          <table class="data" style="margin-top:4px">
+            <tr><td class="name">Borrowed</td><td>&yen;50,000,000</td></tr>
+            <tr><td class="name">Yen borrowing rate</td><td>1.0%</td></tr>
+            <tr><td class="name">A$ investing rate</td><td>4.5%</td></tr>
+            <tr><td class="name">Spot at start</td><td>&yen;60.91 / A$</td></tr>
+            <tr><td class="name">Spot at end</td><td>&yen;83.19 / A$</td></tr>
+          </table>
+        </div>
+        <div class="col">
+          <div class="answer" style="margin-bottom:14px">
+            <div class="alabel">Total profit</div>
+            <div class="bignum sm">+&yen;20.86M</div>
+            <div class="asub">A return of roughly <b style="color:#fff">41.7%</b> on the borrowed amount.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Where the gain came from</div>
+            <div style="font-size:14px;color:#3c5b65;line-height:1.6">A small slice from the <b>3.5% interest spread</b>, but the bulk from the Aussie dollar <b>strengthening</b> from 60.91 to 83.19 yen — the opposite of what parity predicted.</div>
+          </div>
+        </div>
+      </div>
+      <div class="use-hint">▶ Open Tool 10 and press "Aussie–Yen" to reproduce these figures live</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · MINI-CASE</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 49 : EURO-RUPEE LOSS ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Mini-Case · The Loser</div>
+    <h2 class="slide-title sm">Euro&ndash;rupee: when carry bites back</h2>
+    <div class="slide-sub">Same idea, opposite outcome. Borrow euros cheaply, invest in higher-yielding rupees — but the rupee <b>weakened</b>, and the currency loss swallowed the entire interest gain.</div>
+    <div class="body">
+      <div class="grid-2" style="align-items:start">
+        <div class="card tint">
+          <div class="card-title">The numbers</div>
+          <table class="data" style="margin-top:4px">
+            <tr><td class="name">Borrowed</td><td>&euro;20,000,000</td></tr>
+            <tr><td class="name">Euro borrowing rate</td><td>1.0%</td></tr>
+            <tr><td class="name">Rupee investing rate</td><td>2.5%</td></tr>
+            <tr><td class="name">Spot at start</td><td>&#8377;67.40 / &euro;</td></tr>
+            <tr><td class="name">Spot at end</td><td>&#8377;68.00 / &euro;</td></tr>
+            <tr><td class="name">Period</td><td>180 days</td></tr>
+          </table>
+        </div>
+        <div class="col">
+          <div class="answer" style="margin-bottom:14px;background:#3a1f1d">
+            <div class="alabel" style="color:#f2b0ab">Total result</div>
+            <div class="bignum sm" style="color:#ff9b94">&minus;&euro;28,676</div>
+            <div class="asub" style="color:#e8b3af">A small <b style="color:#fff">loss</b> — the rupee's slide beat the yield pickup.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">The lesson</div>
+            <div style="font-size:14px;color:#3c5b65;line-height:1.6">The 1.5% interest edge over 180 days was tiny. Even a <b>modest</b> depreciation of the rupee (67.40 &rarr; 68.00) was enough to turn the whole trade negative. This is International Fisher quietly doing its job.</div>
+          </div>
+        </div>
+      </div>
+      <div class="note-box" style="margin-top:14px"><b>Takeaway:</b> carry profits are real but fragile. The interest gap is small and steady; the currency move is large and unpredictable — and it decides everything.</div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · MINI-CASE</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 50 : KEY GLOSSARY TERMS ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Reference · Key Terms</div>
+    <h2 class="slide-title sm">Chapter 6 vocabulary</h2>
+    <div class="body">
+      <div class="statgrid c2" style="gap:12px">
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Law of One Price</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">Identical goods must sell for the same price everywhere once converted to a common currency.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Purchasing Power Parity</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">Exchange rates adjust so currencies have equal purchasing power; relative PPP links inflation gaps to rate changes.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Fisher Effect</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">Nominal interest rate = real rate + expected inflation.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">International Fisher Effect</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">The currency with the higher nominal rate is expected to depreciate by the rate differential.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Forward Rate</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">An exchange rate set today for settlement on a future date; priced off the interest differential.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Interest Rate Parity</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">The forward premium equals the interest-rate differential; covered routes must tie.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Covered Interest Arbitrage</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">Exploiting a mispriced forward for riskless profit, using a forward to remove currency risk.</div></div>
+        <div class="card" style="padding:14px 18px"><b style="color:var(--sky-deep);font-size:15.5px">Carry Trade (Uncovered)</b><div style="font-size:13.5px;color:#3c5b65;margin-top:4px;line-height:1.4">Borrowing a low-rate currency to invest in a high-rate one without hedging the exit rate.</div></div>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · REFERENCE</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 51 : CHAPTER SUMMARY ============ -->
+<section class="slide">
+  <div class="slide-pad">
+    <div class="kicker">Wrap-Up · The Big Picture</div>
+    <h2 class="slide-title sm">What Chapter 6 proved</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card tint">
+          <div class="card-title">The unifying idea</div>
+          <div style="font-size:15.5px;color:#27454f;line-height:1.6">Prices, interest rates, forward rates, and spot rates are <b>not independent</b>. A single differential between two countries echoes through all of them — and arbitrage is the force that keeps them aligned.</div>
+        </div>
+        <div class="card tint">
+          <div class="card-title">The four pillars</div>
+          <ul class="clean tight">
+            <li><b>PPP</b> ties inflation gaps to currency moves.</li>
+            <li><b>Fisher</b> ties inflation to interest rates.</li>
+            <li><b>IRP</b> ties interest rates to forward rates.</li>
+            <li><b>Unbiased forward</b> ties forwards to expected spots.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card ink" style="margin-top:18px;padding:22px 28px">
+        <div style="font-size:17px;line-height:1.55">In a frictionless world these conditions hold exactly. In the <b style="color:var(--sky)">real</b> world they hold approximately — and the gaps, like Mrs. Watanabe's carry trade, are where both profit and risk live.</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+        <span class="pill neutral">Law of One Price</span><span class="pill neutral">PPP</span><span class="pill neutral">Big Mac Index</span><span class="pill neutral">Fisher Effect</span><span class="pill neutral">International Fisher</span><span class="pill neutral">Forward Rate</span><span class="pill neutral">Interest Rate Parity</span><span class="pill amber">Carry Trade</span>
+      </div>
+    </div>
+    <div class="footer"><span>FIRE 473 · International Finance</span><span class="tag">CH 6 · SUMMARY</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 52 : CLOSING ============ -->
+<section class="slide">
+  <div class="slide-pad title-slide" style="text-align:center;align-items:center">
+    <div style="font-family:var(--mono);font-size:15px;letter-spacing:4px;text-transform:uppercase;opacity:.85;font-weight:700">FIRE 473 · International Finance</div>
+    <div style="font-size:56px;font-weight:800;letter-spacing:-1.5px;margin-top:18px;line-height:1.05">International Parity<br>Conditions</div>
+    <div style="font-size:20px;opacity:.92;margin-top:18px;max-width:680px;line-height:1.5">Twelve live tools, one chapter, one big idea: in global finance, every rate is connected to every other.</div>
+    <div style="display:flex;gap:34px;margin-top:34px;font-family:var(--mono)">
+      <div><div style="font-size:38px;font-weight:700">52</div><div style="font-size:12px;letter-spacing:2px;opacity:.8;text-transform:uppercase">Slides</div></div>
+      <div><div style="font-size:38px;font-weight:700">12</div><div style="font-size:12px;letter-spacing:2px;opacity:.8;text-transform:uppercase">Live Tools</div></div>
+      <div><div style="font-size:38px;font-weight:700">5</div><div style="font-size:12px;letter-spacing:2px;opacity:.8;text-transform:uppercase">Parity Links</div></div>
+    </div>
+    <div style="margin-top:40px;font-size:14px;opacity:.8">Chapter 6 &middot; Multinational Business Finance &middot; 16th Edition</div>
+  </div>
+</section>
+
+</div><!-- #stage -->
+</div><!-- #viewport -->
+
+<div id="controls">
+  <button onclick="prev()" aria-label="Previous">&#8249;</button>
+  <span id="counter">1 / 52</span>
+  <button onclick="next()" aria-label="Next">&#8250;</button>
+</div>
+<div class="hintbadge">Use &larr; &rarr; arrows &middot; drag sliders &amp; press buttons to run each tool</div>
+
+<script>
+/* ============ HELPERS ============ */
+function $(id){return document.getElementById(id);}
+function num(id){var el=$(id);return el?parseFloat(el.value):NaN;}
+function fmt(n,d){if(!isFinite(n))return '\u2014';return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function pct(n,d){d=(d==null?1:d);return (n>=0?'+':'')+fmt(n,d)+'%';}
+function setTxt(id,t){var el=$(id);if(el)el.textContent=t;}
+function setHTML(id,t){var el=$(id);if(el)el.innerHTML=t;}
+
+/* ============ SLIDE ENGINE ============ */
+var slides=document.querySelectorAll('.slide');
+var cur=0;
+function clampScale(){
+  var s=Math.min(window.innerWidth/1280, window.innerHeight/720);
+  $('stage').style.transform='translate(-50%,-50%) scale('+s+')';
+}
+function show(i){
+  if(i<0)i=0; if(i>=slides.length)i=slides.length-1;
+  slides[cur].classList.remove('active');
+  cur=i;
+  slides[cur].classList.add('active');
+  setTxt('counter',(cur+1)+' / '+slides.length);
+  $('progress').style.width=((cur+1)/slides.length*100)+'%';
+}
+function next(){show(cur+1);}
+function prev(){show(cur-1);}
+window.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){next();e.preventDefault();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){prev();e.preventDefault();}
+});
+window.addEventListener('resize',clampScale);
+
+/* generic year-path bar renderer (Tools 3 & 7) */
+function pathBars(wrapId,labId,s,factor,yr){
+  var wrap=$(wrapId), labs=$(labId); wrap.innerHTML=''; labs.innerHTML='';
+  var vals=[]; for(var y=0;y<=yr;y++)vals.push(s*Math.pow(factor,y));
+  var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  var span=(mx-mn)||1;
+  vals.forEach(function(v,y){
+    var col=document.createElement('div'); col.className='barcol';
+    var h=22+(v-mn)/span*76;
+    var bar=document.createElement('div'); bar.className='bar'+(y===yr?' amber':''); bar.style.height=h+'%';
+    var val=document.createElement('div'); val.className='bval'; val.style.fontSize='11px'; val.textContent=fmt(v,0);
+    col.appendChild(val); col.appendChild(bar); wrap.appendChild(col);
+    var sp=document.createElement('span'); sp.textContent=(y===0?'now':'Y'+y); labs.appendChild(sp);
+  });
+}
+
+/* ============ TOOL 1 — LAW OF ONE PRICE ============ */
+function t1(){
+  var us=num('t1_us'), forp=num('t1_for'), mkt=num('t1_mkt');
+  var cur=($('t1_cur').value||'units').trim()||'units';
+  setTxt('t1_us_l','$'+fmt(us,2));
+  setTxt('t1_for_l',fmt(forp,0));
+  setTxt('t1_mkt_l',fmt(mkt,1));
+  setTxt('t1_cur2',cur);
+  var implied=forp/us;
+  setHTML('t1_rate',fmt(implied,2)+' '+cur+' = $1.00');
+  setTxt('t1_imp',fmt(implied,2));
+  setTxt('t1_act',fmt(mkt,2));
+  var diff=(implied-mkt)/mkt*100;
+  var m=$('t1_msg');
+  if(Math.abs(diff)<0.5){
+    setTxt('t1_verdict_l','Foreign currency is'); setTxt('t1_verdict','fairly valued');
+    m.className='verdict neutral';
+    m.innerHTML='The market rate matches the implied rate \u2014 identical goods cost the same in both countries, so the Law of One Price holds.';
+  }else if(diff<0){
+    setTxt('t1_verdict_l',cur+' is undervalued by'); setTxt('t1_verdict',fmt(Math.abs(diff),1)+'%');
+    m.className='verdict good';
+    m.innerHTML='You get more '+cur+' per dollar than the goods justify \u2014 the '+cur+' looks <b>cheap</b> and should rise toward the implied rate.';
+  }else{
+    setTxt('t1_verdict_l',cur+' is overvalued by'); setTxt('t1_verdict',fmt(diff,1)+'%');
+    m.className='verdict bad';
+    m.innerHTML='It takes fewer '+cur+' to buy a dollar than the goods justify \u2014 the '+cur+' looks <b>expensive</b> and should fall toward the implied rate.';
+  }
+}
+
+/* ============ TOOL 2 — BIG MAC INDEX ============ */
+var US2=5.66;
+var T2=[
+ {c:'United States',code:'US',sym:'$',price:5.66,rate:1,dir:'base'},
+ {c:'Switzerland',code:'CH',sym:'CHF ',price:6.50,rate:0.8855,dir:'per_usd'},
+ {c:'Euro area',code:'EU',sym:'\u20AC',price:4.21,rate:1.2271,dir:'usd_per'},
+ {c:'Britain',code:'UK',sym:'\u00A3',price:3.29,rate:1.3653,dir:'usd_per'},
+ {c:'Canada',code:'CA',sym:'C$',price:5.89,rate:1.2776,dir:'per_usd'},
+ {c:'Australia',code:'AU',sym:'A$',price:6.48,rate:1.2933,dir:'per_usd'},
+ {c:'Thailand',code:'TH',sym:'\u0E3F',price:128,rate:29.99,dir:'per_usd'},
+ {c:'South Korea',code:'KR',sym:'\u20A9',price:4500,rate:1097,dir:'per_usd'},
+ {c:'Japan',code:'JP',sym:'\u00A5',price:390,rate:103.70,dir:'per_usd'},
+ {c:'Brazil',code:'BR',sym:'R$',price:21.90,rate:5.395,dir:'per_usd'},
+ {c:'China',code:'CN',sym:'\u00A5',price:22.40,rate:6.4751,dir:'per_usd'},
+ {c:'Mexico',code:'MX',sym:'MXN ',price:54.00,rate:19.92,dir:'per_usd'},
+ {c:'India',code:'IN',sym:'\u20B9',price:190,rate:73.05,dir:'per_usd'},
+ {c:'Russia',code:'RU',sym:'\u20BD',price:135,rate:73.65,dir:'per_usd'}
+];
+function t2compute(d){
+  if(d.dir==='base')return {dollar:US2,implied:1,actual:1,ou:0};
+  if(d.dir==='per_usd'){
+    var dollar=d.price/d.rate, implied=d.price/US2;
+    return {dollar:dollar,implied:implied,actual:d.rate,ou:(implied-d.rate)/d.rate*100};
+  }
+  var dol=d.price*d.rate, imp=US2/d.price;
+  return {dollar:dol,implied:imp,actual:d.rate,ou:(d.rate-imp)/imp*100};
+}
+function t2init(){
+  var sel=$('t2_country'); sel.innerHTML='';
+  var def=0;
+  T2.forEach(function(d,i){
+    var o=document.createElement('option'); o.value=i; o.textContent=d.c; sel.appendChild(o);
+    if(d.c==='China')def=i;
+  });
+  sel.value=def; t2();
+}
+function t2(){
+  var idx=parseInt($('t2_country').value,10)||0, d=T2[idx], r=t2compute(d);
+  var locStr=(d.dir==='usd_per')?(d.sym+fmt(d.price,2)):(d.sym+fmt(d.price,d.price>=100?0:2));
+  setTxt('t2_local',locStr);
+  setTxt('t2_dollar','$'+fmt(r.dollar,2));
+  var big=$('t2_big');
+  if(d.dir==='base'){
+    setTxt('t2_alabel','United States \u2014 the benchmark');
+    big.innerHTML='0.0% \u2014 base currency'; big.style.color='#fff';
+    setTxt('t2_sub','Every other currency is measured against the U.S. dollar.');
+    setTxt('t2_implied','\u2014'); setTxt('t2_actual','\u2014');
+  }else{
+    var dec=(d.dir==='usd_per')?4:2;
+    setTxt('t2_implied',fmt(r.implied,dec));
+    setTxt('t2_actual',fmt(r.actual,dec));
+    var word=r.ou<0?'undervalued':'overvalued';
+    setTxt('t2_alabel',d.c+' \u2014 versus the U.S. dollar');
+    big.innerHTML=pct(r.ou,1)+' '+word; big.style.color=(r.ou<0?'var(--down)':'var(--up)');
+    setTxt('t2_sub',r.ou<0?'PPP says an undervalued currency should rise over the long run to close this gap.':'PPP says an overvalued currency should weaken over the long run to close this gap.');
+  }
+  t2bars(idx);
+}
+function t2bars(selIdx){
+  var wrap=$('t2_bars'); wrap.innerHTML='';
+  var arr=T2.map(function(d,i){var r=t2compute(d);return {code:d.code,ou:r.ou,i:i,base:d.dir==='base'};});
+  arr.sort(function(a,b){return b.ou-a.ou;});
+  var maxAbs=1; arr.forEach(function(x){if(Math.abs(x.ou)>maxAbs)maxAbs=Math.abs(x.ou);});
+  arr.forEach(function(x){
+    var col=document.createElement('div'); col.className='barcol'; col.style.gap='3px';
+    var val=document.createElement('div'); val.className='bval'; val.style.fontSize='9.5px';
+    val.textContent=(x.ou>=0?'+':'')+x.ou.toFixed(0);
+    var bar=document.createElement('div'); bar.className='bar '+(x.base?'':(x.ou>=0?'up':'down'));
+    bar.style.height=Math.max(2,Math.abs(x.ou)/maxAbs*100)+'%'; bar.style.width='78%';
+    if(x.base)bar.style.background='var(--sky-deep)';
+    if(x.i===selIdx){bar.style.outline='3px solid var(--amber)'; bar.style.outlineOffset='1px';}
+    var lab=document.createElement('div'); lab.style.cssText='font-size:9.5px;color:#5b7d88;font-weight:700'; lab.textContent=x.code;
+    col.appendChild(val); col.appendChild(bar); col.appendChild(lab); wrap.appendChild(col);
+  });
+}
+
+/* ============ TOOL 3 — RELATIVE PPP FUTURE SPOT ============ */
+function t3(){
+  var s=num('t3_spot'), ph=num('t3_home')/100, pf=num('t3_for')/100, yr=Math.round(num('t3_yr'));
+  setTxt('t3_spot_l',fmt(s,1));
+  setTxt('t3_home_l',fmt(num('t3_home'),1)+'%');
+  setTxt('t3_for_l',fmt(num('t3_for'),1)+'%');
+  setTxt('t3_yr_l',yr);
+  setTxt('t3_yrlabel','Predicted rate in '+yr+(yr===1?' year':' years'));
+  var factor=(1+pf)/(1+ph), future=s*Math.pow(factor,yr), chg=(future-s)/s*100;
+  setHTML('t3_future',fmt(future,1)+' = $1.00');
+  setTxt('t3_chg',pct(chg,1));
+  $('t3_chg').className='s-v '+(chg<=0?'pos':'neg');
+  setTxt('t3_msg', pf<ph?'Lower foreign inflation \u2014 the foreign currency strengthens (fewer units per dollar).':(pf>ph?'Higher foreign inflation \u2014 the foreign currency weakens (more units per dollar).':'Equal inflation \u2014 the rate is expected to stay flat.'));
+  pathBars('t3_bars','t3_labels',s,factor,yr);
+}
+
+/* ============ TOOL 4 — CURRENCY VALUATION GAUGE (REER) ============ */
+function t4(){
+  var nom=num('t4_nom'), hc=num('t4_home'), fc=num('t4_for');
+  setTxt('t4_nom_l',fmt(nom,0)); setTxt('t4_home_l',fmt(hc,0)); setTxt('t4_for_l',fmt(fc,0));
+  var real=nom*(hc/fc);
+  setTxt('t4_real',fmt(real,1));
+  var left=Math.max(0,Math.min(100,(real-60)/80*100));
+  $('t4_marker').style.left=left+'%';
+  var v=$('t4_verdict');
+  if(Math.abs(real-100)<2){
+    setTxt('t4_msg','At about 100 the currency is fairly valued \u2014 PPP holds and competitiveness is balanced.');
+    v.className='verdict neutral'; v.innerHTML='Relative costs are in balance \u2014 no real over- or under-valuation.';
+  }else if(real>100){
+    setTxt('t4_msg','Above 100: the currency is overvalued in real terms.');
+    v.className='verdict bad'; v.innerHTML='Home costs have risen relative to abroad \u2014 exports look <b>expensive</b> and the country is <b>less competitive</b>.';
+  }else{
+    setTxt('t4_msg','Below 100: the currency is undervalued in real terms.');
+    v.className='verdict good'; v.innerHTML='Home costs are low relative to abroad \u2014 exports look <b>cheap</b> and the country is <b>more competitive</b>.';
+  }
+}
+
+/* ============ TOOL 5 — PASS-THROUGH ============ */
+function t5(){
+  var base=num('t5_base'), appr=num('t5_appr')/100, pt=num('t5_pt')/100, el=num('t5_el');
+  setTxt('t5_base_l','$'+fmt(base,0));
+  setTxt('t5_appr_l',fmt(num('t5_appr'),0)+'%');
+  setTxt('t5_pt_l',fmt(num('t5_pt'),0)+'%');
+  setTxt('t5_el_l',fmt(el,1));
+  var full=base*(1+appr), actual=base*(1+pt*appr);
+  var riseSeen=pt*appr*100, dRev=riseSeen*(1-el);
+  setTxt('t5_price','$'+fmt(actual,0));
+  setTxt('t5_rise',pct(riseSeen,0));
+  setTxt('t5_rev',pct(dRev,1));
+  $('t5_rev').className='s-v '+(dRev>0.05?'pos':(dRev<-0.05?'neg':''));
+  var wrap=$('t5_bars'); wrap.innerHTML='';
+  var data=[{l:'Old price',v:base,c:''},{l:'Full pass-through',v:full,c:'amber'},{l:'Actual price',v:actual,c:'up'}];
+  var mx=Math.max(base,full,actual)||1;
+  data.forEach(function(d){
+    var col=document.createElement('div'); col.className='barcol';
+    var val=document.createElement('div'); val.className='bval'; val.textContent='$'+fmt(d.v,0);
+    var bar=document.createElement('div'); bar.className='bar'+(d.c?' '+d.c:''); bar.style.height=Math.max(4,d.v/mx*100)+'%';
+    var lab=document.createElement('div'); lab.style.cssText='font-size:11px;color:#5b7d88;font-weight:700;margin-top:4px'; lab.textContent=d.l;
+    col.appendChild(val); col.appendChild(bar); col.appendChild(lab); wrap.appendChild(col);
+  });
+  var v=$('t5_verdict');
+  if(Math.abs(el-1)<0.05){ v.className='verdict neutral'; v.innerHTML='Unit elasticity: the price rise and quantity drop cancel, so revenue is roughly <b>unchanged</b>.';}
+  else if(el<1){ v.className='verdict good'; v.innerHTML='Inelastic demand (e &lt; 1): buyers keep buying, so passing the cost through <b>raises revenue</b>.';}
+  else { v.className='verdict bad'; v.innerHTML='Elastic demand (e &gt; 1): buyers flee as prices rise, so the firm should <b>absorb</b> the cost or lose revenue.';}
+}
+
+/* ============ TOOL 6 — FISHER EFFECT ============ */
+function t6(){
+  var r=num('t6_real')/100, p=num('t6_infl')/100;
+  setTxt('t6_real_l',fmt(num('t6_real'),1)+'%');
+  setTxt('t6_infl_l',fmt(num('t6_infl'),1)+'%');
+  var exact=((1+r)*(1+p)-1)*100, approx=(r+p)*100, cross=(r*p)*100;
+  setTxt('t6_exact',fmt(exact,2)+'%');
+  setTxt('t6_approx',fmt(approx,2)+'%');
+  setTxt('t6_cross',fmt(cross,2)+'%');
+  setTxt('t6_msg','Investors need '+fmt(exact,2)+'% to keep a '+fmt(num('t6_real'),1)+'% real return once '+fmt(num('t6_infl'),1)+'% inflation is covered.');
+  var v=$('t6_verdict'); v.className='verdict neutral';
+  v.innerHTML=(cross<0.2)?'At low inflation the quick rule (r + &pi;) is almost exact \u2014 the cross term is tiny.':'The cross term is now '+fmt(cross,2)+'% \u2014 the quick rule <b>understates</b> the true nominal rate as inflation climbs.';
+}
+</script>
+
+<script>
+/* ============ TOOL 7 — INTERNATIONAL FISHER EFFECT ============ */
+function t7(){
+  var s=num('t7_spot'), ih=num('t7_home')/100, iff=num('t7_for')/100, yr=Math.round(num('t7_yr'));
+  setTxt('t7_spot_l',fmt(s,1));
+  setTxt('t7_home_l',fmt(num('t7_home'),1)+'%');
+  setTxt('t7_for_l',fmt(num('t7_for'),1)+'%');
+  setTxt('t7_yr_l',yr);
+  setTxt('t7_yrlabel','Expected rate in '+yr+(yr===1?' year':' years'));
+  var factor=(1+iff)/(1+ih), future=s*Math.pow(factor,yr), chg=(future-s)/s*100;
+  setHTML('t7_future',fmt(future,1)+' = $1.00');
+  setTxt('t7_chg',pct(chg,1));
+  $('t7_chg').className='s-v '+(chg<=0?'pos':'neg');
+  setHTML('t7_approx',pct(num('t7_for')-num('t7_home'),1));
+  setTxt('t7_msg', iff<ih?'The lower-rate foreign currency strengthens against the dollar.':(iff>ih?'The higher-rate foreign currency weakens against the dollar.':'Equal rates \u2014 the spot rate is expected to hold.'));
+  pathBars('t7_bars','t7_labels',s,factor,yr);
+}
+
+/* ============ TOOL 8 — FORWARD RATE & PREMIUM ============ */
+function t8(){
+  var s=num('t8_spot'), ih=num('t8_home')/100, iff=num('t8_for')/100, d=Math.round(num('t8_days'));
+  setTxt('t8_spot_l',fmt(s,4));
+  setTxt('t8_home_l',fmt(num('t8_home'),1)+'%');
+  setTxt('t8_for_l',fmt(num('t8_for'),1)+'%');
+  setTxt('t8_days_l',d);
+  var F=s*(1+iff*d/360)/(1+ih*d/360), prem=(s-F)/F*(360/d)*100;
+  setHTML('t8_fwd',fmt(F,4)+' = $1.00');
+  setTxt('t8_prem',pct(prem,2));
+  $('t8_prem').className='s-v '+(prem>=0?'pos':'neg');
+  setTxt('t8_s',fmt(s,4)); setTxt('t8_f',fmt(F,4));
+  setTxt('t8_gap',pct(num('t8_home')-num('t8_for'),1));
+  var v=$('t8_verdict');
+  if(iff<ih){ v.className='verdict good'; setTxt('t8_msg','Fewer units buy a dollar forward \u2014 the foreign currency is stronger in the future.'); v.innerHTML='The foreign rate is below the dollar\u2019s, so the currency trades at a forward <b>premium</b>.';}
+  else if(iff>ih){ v.className='verdict bad'; setTxt('t8_msg','More units buy a dollar forward \u2014 the foreign currency is weaker in the future.'); v.innerHTML='The foreign rate is above the dollar\u2019s, so the currency trades at a forward <b>discount</b>.';}
+  else { v.className='verdict neutral'; setTxt('t8_msg','Equal rates \u2014 forward equals spot.'); v.innerHTML='With equal interest rates there is no forward premium or discount.';}
+}
+
+/* ============ TOOL 9 — COVERED INTEREST ARBITRAGE BOX ============ */
+function t9(){
+  var amt=num('t9_amt'), s=num('t9_spot'), F=num('t9_fwd'), ih=num('t9_home')/100, iff=num('t9_for')/100, d=Math.round(num('t9_days'));
+  setTxt('t9_amt_l','$'+fmt(amt,0));
+  setTxt('t9_spot_l',fmt(s,2)); setTxt('t9_fwd_l',fmt(F,2));
+  setTxt('t9_home_l',fmt(num('t9_home'),1)+'%');
+  setTxt('t9_for_l',fmt(num('t9_for'),1)+'%');
+  setTxt('t9_days_l',d);
+  var home=amt*(1+ih*d/360), foreign=amt*s*(1+iff*d/360)/F, profit=foreign-home;
+  setTxt('t9_home_end','$'+fmt(home,0));
+  setTxt('t9_for_end','$'+fmt(foreign,0));
+  $('t9_homebox').className='fnode'+(home>=foreign?' win':'');
+  $('t9_forbox').className='fnode'+(foreign>home?' win':'');
+  setTxt('t9_profit',(profit>=0?'+':'\u2212')+'$'+fmt(Math.abs(profit),0));
+  var Fstar=s*(1+iff*d/360)/(1+ih*d/360);
+  var holds=Math.abs(F-Fstar)/Fstar<0.0008;
+  var v=$('t9_verdict');
+  if(holds||Math.abs(profit)<1){
+    setTxt('t9_irp','Yes \u2014 parity holds');
+    setTxt('t9_dir','No arbitrage profit \u2014 both routes tie.');
+    v.className='verdict neutral'; v.innerHTML='The forward rate equals its parity value, so covered arbitrage earns <b>nothing</b>. This is the equilibrium.';
+  }else if(foreign>home){
+    setTxt('t9_irp','No \u2014 gap exists');
+    setTxt('t9_dir','Borrow dollars, invest covered in the foreign currency.');
+    v.className='verdict good'; v.innerHTML='The covered foreign route wins \u2014 borrow dollars, convert, invest abroad, and lock the forward for riskless profit.';
+  }else{
+    setTxt('t9_irp','No \u2014 gap exists');
+    setTxt('t9_dir','Borrow foreign, invest at home in dollars.');
+    v.className='verdict good'; v.innerHTML='The home route wins \u2014 borrow the foreign currency, convert to dollars, and invest at home for riskless profit.';
+  }
+}
+
+/* ============ TOOL 10 — CARRY TRADE ============ */
+var T10P={
+  aud:{borrow:50000000,brate:1,irate:4.5,s0:60.91,s1:83.19,days:360,
+       fundCur:'\u00A5',fundName:'Japanese yen',investName:'Australian dollars',investSym:'A$',conv:'fpi',
+       s0lbl:'Start spot (\u00A5 per A$)',s1lbl:'End spot (\u00A5 per A$)'},
+  eur:{borrow:20000000,brate:1,irate:2.5,s0:67.40,s1:68.00,days:180,
+       fundCur:'\u20AC',fundName:'Euros',investName:'Indian rupees',investSym:'\u20B9',conv:'ipf',
+       s0lbl:'Start spot (\u20B9 per \u20AC)',s1lbl:'End spot (\u20B9 per \u20AC)'}
+};
+var T10CUR=T10P.aud;
+function t10preset(k){
+  var p=T10P[k]; T10CUR=p;
+  $('t10_borrow').value=p.borrow; $('t10_brate').value=p.brate; $('t10_irate').value=p.irate;
+  $('t10_s0').value=p.s0; $('t10_s1').value=p.s1; $('t10_days').value=p.days;
+  setHTML('t10_fundlbl','Funding currency: '+p.fundName);
+  setHTML('t10_investlbl','Investing in: '+p.investName);
+  setHTML('t10_s0lbl',p.s0lbl); setHTML('t10_s1lbl',p.s1lbl);
+  t10();
+}
+function t10(){
+  var p=T10CUR;
+  var B=num('t10_borrow'), bi=num('t10_brate')/100, ii=num('t10_irate')/100, d=Math.round(num('t10_days'));
+  var s0=num('t10_s0'), s1=num('t10_s1');
+  setHTML('t10_borrow_l',p.fundCur+fmt(B,0));
+  setTxt('t10_brate_l',fmt(num('t10_brate'),1)+'%');
+  setTxt('t10_irate_l',fmt(num('t10_irate'),1)+'%');
+  setTxt('t10_days_l',d);
+  var invAmt, back, growF=(1+ii*d/360);
+  if(p.conv==='fpi'){ invAmt=B/s0; back=invAmt*growF*s1; }
+  else { invAmt=B*s0; back=invAmt*growF/s1; }
+  var grown=invAmt*growF, owe=B*(1+bi*d/360), profit=back-owe, ret=profit/B*100;
+  setTxt('t10_conv',p.investSym+fmt(invAmt,0));
+  setTxt('t10_grown',p.investSym+fmt(grown,0));
+  setTxt('t10_back',p.fundCur+fmt(back,0));
+  setTxt('t10_owe',p.fundCur+fmt(owe,0));
+  setTxt('t10_profit',(profit>=0?'+':'\u2212')+p.fundCur+fmt(Math.abs(profit),0));
+  setTxt('t10_ret',(profit>=0?'A return of roughly ':'A loss of roughly ')+fmt(Math.abs(ret),1)+'% on the borrowed amount.');
+  var v=$('t10_verdict');
+  if(profit>=0){ v.className='verdict good'; v.innerHTML='The funding currency stayed weak enough \u2014 the interest spread <b>and</b> the currency move both paid off.';}
+  else { v.className='verdict bad'; v.innerHTML='The investment currency fell \u2014 its slide <b>swallowed</b> the interest gain and the trade lost money.';}
+}
+
+/* ============ TOOL 11 — FORECAST-ERROR SIMULATOR ============ */
+function randn(){var u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function t11draw(){
+  var F=num('t11_fwd'), vol=num('t11_vol')/100, bias=num('t11_bias')/100, n=Math.round(num('t11_n'));
+  setTxt('t11_fwd_l',fmt(F,1));
+  setTxt('t11_vol_l',fmt(num('t11_vol'),1)+'%');
+  setTxt('t11_bias_l',fmt(num('t11_bias'),1)+'%');
+  setTxt('t11_n_l',n);
+  var spots=[],sum=0,errSum=0;
+  for(var i=0;i<n;i++){var sp=F*(1+bias+vol*randn());if(sp<1)sp=1;spots.push(sp);sum+=sp;errSum+=(sp-F);}
+  var avg=sum/n, avgErr=errSum/n;
+  setTxt('t11_avg',fmt(avg,1));
+  setTxt('t11_err',(avgErr>=0?'+':'\u2212')+fmt(Math.abs(avgErr),2));
+  var box=$('t11_chart'); box.innerHTML='';
+  var maxDev=Math.max(vol*3*F,1), W=100/n;
+  spots.forEach(function(sp,i){
+    var dev=sp-F, h=Math.min(47,Math.abs(dev)/maxDev*47);
+    var bar=document.createElement('div');
+    bar.style.cssText='position:absolute;width:'+(W*0.62)+'%;left:'+(i*W+W*0.19)+'%;border-radius:2px;';
+    if(dev>=0){ bar.style.bottom='50%'; bar.style.height=h+'%'; bar.style.background='var(--up)'; }
+    else { bar.style.top='50%'; bar.style.height=h+'%'; bar.style.background='var(--down)'; }
+    box.appendChild(bar);
+  });
+  var line=document.createElement('div'); line.style.cssText='position:absolute;left:0;right:0;top:50%;height:2px;background:var(--sky-ink)';
+  var lbl=document.createElement('div'); lbl.style.cssText='position:absolute;right:6px;top:calc(50% - 19px);font-family:var(--mono);font-size:11px;color:var(--sky-ink);font-weight:700;background:rgba(255,255,255,.7);padding:0 4px;border-radius:4px'; lbl.textContent='forward = '+fmt(F,0);
+  box.appendChild(line); box.appendChild(lbl);
+  var v=$('t11_verdict');
+  if(Math.abs(num('t11_bias'))<0.25){
+    setTxt('t11_msg','Across all periods the misses nearly cancel \u2014 the forward was an unbiased predictor.');
+    v.className='verdict good'; v.innerHTML='Average error &asymp; 0: with no bias, the forward sits in the middle of outcomes no matter how volatile.';
+  }else{
+    setTxt('t11_msg','A built-in bias means the errors no longer cancel \u2014 the forward systematically mis-predicts.');
+    v.className='verdict bad'; v.innerHTML='Non-zero average error: a persistent bias like this is exactly what a speculator could <b>profit</b> from \u2014 breaking efficiency.';
+  }
+}
+
+/* ============ TOOL 12 — PARITY EQUILIBRIUM DASHBOARD ============ */
+function t12(){
+  var s=num('t12_spot'), ph=num('t12_hinf')/100, pf=num('t12_finf')/100, r=num('t12_real')/100;
+  setTxt('t12_spot_l',fmt(s,1));
+  setTxt('t12_hinf_l',fmt(num('t12_hinf'),1)+'%');
+  setTxt('t12_finf_l',fmt(num('t12_finf'),1)+'%');
+  setTxt('t12_real_l',fmt(num('t12_real'),1)+'%');
+  var ih=(1+r)*(1+ph)-1, iff=(1+r)*(1+pf)-1;
+  var infDiff=(ph-pf)*100, intDiff=(ih-iff)*100;
+  var fcAppr=((1+ph)/(1+pf)-1)*100, fwdPrem=((ih-iff)/(1+iff))*100;
+  var pppSpot=s*(1+pf)/(1+ph), fwdRate=s*(1+iff)/(1+ih);
+  setTxt('t12_ihome',fmt(ih*100,2)+'%'); setTxt('t12_ifor',fmt(iff*100,2)+'%');
+  setTxt('t12_ppp',fmt(pppSpot,1)); setTxt('t12_fwd',fmt(fwdRate,1));
+  setTxt('t12_spot_c',pct(fcAppr,1)); setTxt('t12_fwd_c',pct(fwdPrem,1));
+  setTxt('t12_inf_c',pct(infDiff,1)); setTxt('t12_int_c',pct(intDiff,1));
+  $('t12_spot_c').style.color=(fcAppr>=0?'var(--up)':'var(--down)');
+  $('t12_fwd_c').style.color=(fwdPrem>=0?'var(--up)':'var(--down)');
+  var avg=(fcAppr+fwdPrem+infDiff+intDiff)/4;
+  setHTML('t12_center','\u2248 '+pct(avg,1));
+  var word=infDiff>0.1?'appreciate':(infDiff<-0.1?'depreciate':'hold steady');
+  var v=$('t12_msg'); v.className='verdict good';
+  v.innerHTML='All four corners read about <b>'+pct(avg,1)+'</b> \u2014 the foreign currency should '+word+', and PPP &amp; IRP both point to a spot near <b>'+fmt(pppSpot,0)+'</b>.';
+}
+
+/* ============ INIT ============ */
+function initAll(){
+  clampScale(); show(0);
+  t1(); t2init(); t3(); t4(); t5(); t6(); t7(); t8(); t9(); t10preset('aud'); t11draw(); t12();
+}
+if(document.readyState==='loading'){window.addEventListener('DOMContentLoaded',initAll);}else{initAll();}
+</script>
+</body>
+</html>
